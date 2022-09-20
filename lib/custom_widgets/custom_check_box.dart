@@ -35,7 +35,7 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         child: isSelected ? Center(
           child:  AnimatedContainer(
             curve: Curves.fastLinearToSlowEaseIn,
-            duration: Duration(milliseconds: 10000),
+            duration: Duration(milliseconds: 1000),
             width: 16,
             height: 16,
             decoration: BoxDecoration(
