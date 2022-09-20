@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:provider/provider.dart';
-import '../provider/buttons_provider.dart';
 import 'fav_tab_widget.dart';
 import 'maps_tab_widget.dart';
 import 'stocks_tab_widget.dart';
@@ -19,19 +16,18 @@ class _TabCupWidgetState extends State<TabCupWidget> {
   int selectedIndex = 0;
   final List<Widget> _tabs = [
     StocksTabWidget(),
-    MapsTabWidget(),
-    FavTabWidget()
+    const MapsTabWidget(),
+    const FavTabWidget()
   ];
 
   @override
   Widget build(BuildContext context) {
-    final providerButt = Provider.of<ButtonsProvider>(context);
     return Scaffold(
       body: CupertinoPageScaffold(
         child: CupertinoTabScaffold(
           tabBar: CupertinoTabBar(
             activeColor: Theme.of(context).backgroundColor,
-            items: [
+            items: const [
               BottomNavigationBarItem(
                   icon: Icon(
                     Icons.percent_sharp,
@@ -72,7 +68,7 @@ class _TabCupWidgetState extends State<TabCupWidget> {
       child: Container(
         decoration: BoxDecoration(
             color: selectedIndex == index ? Colors.grey.shade300 : Colors.transparent,
-            borderRadius: BorderRadius.all(Radius.circular(10))
+            borderRadius: const BorderRadius.all(Radius.circular(10))
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
