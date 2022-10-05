@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../custom_widgets/custom_check_box.dart';
 
 class ButtonsProvider extends ChangeNotifier {
@@ -89,51 +87,6 @@ class ButtonsProvider extends ChangeNotifier {
                     ],
                   ),
                 ),
-                  // child: Row(
-                  //   children: [
-                  //     Expanded(
-                  //       child: ElevatedButton(
-                  //         onPressed: () {
-                  //           Navigator.pop(context);
-                  //           // pickingImage(false);
-                  //         },
-                  //         style: ElevatedButton.styleFrom(
-                  //           primary: Colors.black,
-                  //           onPrimary: Colors.white,
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(16.0),
-                  //           ),
-                  //         ),
-                  //         child: Padding(
-                  //           padding: const EdgeInsets.symmetric(vertical: 13.0),
-                  //           child: Text('Memory'),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     const SizedBox(
-                  //       width: 15.0,
-                  //     ),
-                  //     Expanded(
-                  //       child: ElevatedButton(
-                  //         onPressed: () {
-                  //           Navigator.pop(context);
-                  //           // pickingImage(true);
-                  //         },
-                  //         style: ElevatedButton.styleFrom(
-                  //           primary: Colors.black,
-                  //           onPrimary: Colors.white,
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(16.0),
-                  //           ),
-                  //         ),
-                  //         child: Padding(
-                  //           padding: const EdgeInsets.symmetric(vertical: 13.0),
-                  //           child: Text('Camera'),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
               ],
             ),
           ),
@@ -151,6 +104,7 @@ class IsChecked extends StatefulWidget {
 }
 
 class _IsCheckedState extends State<IsChecked> {
+
   bool isChecked = false;
   @override
   Widget build(BuildContext context) {

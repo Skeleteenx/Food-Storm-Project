@@ -17,7 +17,7 @@ class _TabCupWidgetState extends State<TabCupWidget> {
   final List<Widget> _tabs = [
     StocksTabWidget(),
     const MapsTabWidget(),
-    const FavTabWidget()
+    FavTabWidget()
   ];
 
   @override
@@ -67,7 +67,9 @@ class _TabCupWidgetState extends State<TabCupWidget> {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: selectedIndex == index ? Colors.grey.shade300 : Colors.transparent,
+            color: selectedIndex == index
+                ? Colors.grey.shade300
+                : Colors.transparent,
             borderRadius: const BorderRadius.all(Radius.circular(10))
         ),
         child: Padding(
@@ -78,7 +80,11 @@ class _TabCupWidgetState extends State<TabCupWidget> {
               style: TextStyle(
                   fontFamily: 'SFProLight',
                   fontWeight: FontWeight.bold,
-                  fontSize: 15, color: selectedIndex == index ? Colors.black54 : Colors.black38),
+                  fontSize: 15,
+                  color: selectedIndex == index
+                  ? Colors.black54
+                  : Colors.black38
+              ),
             ),
           ),
         ),

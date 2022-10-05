@@ -1,14 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/target_promo_model.dart';
+import '../provider/favorites_provider.dart';
 
-class SelectedPromoWidget extends StatefulWidget {
-  const SelectedPromoWidget({Key? key}) : super(key: key);
+class SelectedPromoWidgetInPromo extends StatefulWidget {
+  SelectedPromoWidgetInPromo({
+    required this.model
+  });
+  TargetPromoModel model;
 
   @override
-  State<SelectedPromoWidget> createState() => _SelectedPromoWidgetState();
+  State<SelectedPromoWidgetInPromo> createState() => _SelectedPromoWidgetInPromoState();
 }
 
-class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
+class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo> {
   List<String> categories = [
     'Все',
     'Фастфуд',
@@ -17,9 +24,12 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
     'Роллы',
     'Бургеры'
   ];
+
   int selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
       body: NestedScrollView(
         physics: BouncingScrollPhysics(),
@@ -27,11 +37,28 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
           SliverAppBar(
             actions: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: ()  {
+                       favProvider.addStockToFav(
+                          widget.model.basicDescription,
+                          widget.model.shortDescription,
+                          widget.model.email,
+                          widget.model.endDate,
+                          widget.model.nameInstitution,
+                          widget.model.nameStocks,
+                          widget.model.startDate,
+                          widget.model.phoneNumber,
+                          widget.model.informationAboutTheRest,
+                          widget.model.operatingMode,
+                          widget.model.shareSize,
+                          widget.model.resRating,
+                          widget.model.image,
+                          widget.model.iconRes
+                      );
+                    },
                     icon: Icon(
-                      Icons.share,
+                      Icons.favorite,
                       size: 30,
                       color: Theme.of(context).primaryColor,
                     )
@@ -42,29 +69,10 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(
-                          "assets/images/aleks-dorohovich-HYpXP6Zk1dw-unsplash 1.png"))),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 32, 10, 0),
-                  child: Column(
-                    children: [
-                      // IconButton(
-                      //     onPressed: (){},
-                      //     icon: Icon(
-                      //       Icons.favorite,
-                      //       size: 32,
-                      //       color: Theme.of(context).primaryColor,
-                      //     )
-                      // ),
-                      // IconButton(
-                      //     onPressed: (){},
-                      //     icon: Icon(Icons.share, size: 32, color: Theme.of(context).primaryColor,)
-                      // ),
-                    ],
-                  ),
-                ),
+                      image: NetworkImage(
+                          '${widget.model.image}'
+                      )
+                  )
               ),
             ),
             expandedHeight: 270,
@@ -74,15 +82,20 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: ListView(
             physics: BouncingScrollPhysics(),
-            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Комбо с биг мак от  Mc’Donalds за 250 р',
-                    style: TextStyle(fontSize: 22, fontFamily: 'SFProBold'),
+                  Container(
+                    width: 215,
+                    child: Text(
+                      widget.model.nameStocks,
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontFamily: 'SFProBold'
+                      ),
+                    ),
                   ),
                   Container(
                     height: 32,
@@ -100,11 +113,13 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                         borderRadius: BorderRadius.all(Radius.circular(13))),
                     child: Center(
                         child: Text(
-                      '-50%',
-                      style: TextStyle(
-                          color: Theme.of(context).backgroundColor,
-                          fontSize: 19),
-                    )),
+                          '-50%',
+                          style: TextStyle(
+                              color: Theme.of(context).backgroundColor,
+                              fontSize: 19
+                          ),
+                        )
+                    ),
                   )
                 ],
               ),
@@ -112,8 +127,11 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                 height: 8,
               ),
               Text(
-                'с 18.09 до 25.09',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+                'с ${widget.model.startDate} по ${widget.model.endDate}',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade500
+                ),
               ),
               SizedBox(
                 height: 16,
@@ -133,7 +151,7 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 77, 0),
                 child: Text(
-                  'Биг-мак, большой картофель фри, coca-cola 0.4 мл, сырный соус, пирожок с вишней.',
+                  widget.model.basicDescription,
                   style: TextStyle(
                     fontSize: 16,
                   ),
@@ -152,19 +170,27 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
               ),
               Text(
                 'О ресторане',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 14
+                ),
               ),
               SizedBox(
                 height: 10,
               ),
               Row(
                 children: [
-                  Image.asset('assets/images/Vector.png'),
+                  SizedBox(
+                    height: 28,
+                      width: 32,
+                      child: Image.network('${widget.model.iconRes}'
+                      )
+                  ),
                   SizedBox(
                     width: 8,
                   ),
                   Text(
-                    'Mc’Donalds',
+                    widget.model.nameInstitution,
                     style: TextStyle(fontSize: 20),
                   ),
                   SizedBox(
@@ -176,7 +202,7 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                     size: 14,
                   ),
                   Text(
-                    '4,6',
+                    widget.model.resRating,
                     style: TextStyle(fontSize: 12),
                   )
                 ],
@@ -185,7 +211,7 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                 height: 10,
               ),
               Text(
-                'Компания МакДональдс ежедневно делает тысячи людей счастливыми благодаря вкусной и сочной еде. Любимые блюда состоят из обычных продуктов, имеющихся в каждом доме – это вкусные овощи, куриное мясо, говядина, бекон, картофель, рыба, яйца, булочки и молочные продукты. Мы отвечаем за высокое качество и безопасность предлагаемой продукции для каждого гостя.',
+                widget.model.informationAboutTheRest,
                 style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'SFProLight'
@@ -195,18 +221,20 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
               Container(
                 height: 188,
                 decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                      image: AssetImage('assets/images/marjan-blan-marjanblan-gHCbgGN5TCA-unsplash 1.png')
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(22))
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: AssetImage('assets/images/marjan-blan-marjanblan-gHCbgGN5TCA-unsplash 1.png')
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(22))
                 ),
               ),
               SizedBox(height: 24,),
-              Text('Адрес', style: TextStyle(
-              color: Colors.grey.shade400,
-              fontSize: 14,
-              fontFamily: 'SFProLight'
+              Text(
+                'Адрес',
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 14,
+                  fontFamily: 'SFProLight'
               ),
               ),
               SizedBox(height: 10,),
@@ -218,9 +246,11 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                     size: 24,
                   ),
                   SizedBox(width: 12,),
-                  Text('Тольятти, пр-т Мира, д 167 Г', style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'SFProLight',
+                  Text(
+                    'Тольятти, пр-т Мира, д 167 Г',
+                    style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'SFProLight',
                   ),
                   )
                 ],
@@ -228,9 +258,9 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
               SizedBox(height: 28,),
               Text(
                 'Режим работы', style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                    fontFamily: 'SFProLight'
+                  color: Colors.grey.shade400,
+                  fontSize: 14,
+                  fontFamily: 'SFProLight'
               ),
               ),
               SizedBox(height: 10,),
@@ -242,7 +272,9 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                     size: 24,
                   ),
                   SizedBox(width: 12,),
-                  Text('с 9:00 до 00:00', style: TextStyle(
+                  Text(
+                    widget.model.operatingMode,
+                    style: TextStyle(
                     fontSize: 16,
                     fontFamily: 'SFProLight',
                   ),
@@ -260,7 +292,7 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).backgroundColor,
+                            color: Theme.of(context).backgroundColor,
                             borderRadius: BorderRadius.circular(100)
                         ),
                         child: Image.asset('assets/images/globe-Bold.png'),
@@ -283,15 +315,19 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                             color: Theme.of(context).backgroundColor,
                             borderRadius: BorderRadius.circular(100)
                         ),
-                        child: Center(child: Image.asset('assets/images/Shape.png')),
+                        child: Center(
+                            child: Image.asset('assets/images/Shape.png')
+                        ),
                       ),
                     ],
                   ),
                   SizedBox(height: 12,),
-                  Text('Пожаловаться', style: TextStyle(
-                  color: Colors.grey.shade400,
-                  fontSize: 16,
-                  fontFamily: 'SFProLight'
+                  Text(
+                    'Пожаловаться',
+                    style: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 16,
+                      fontFamily: 'SFProLight'
                   ),
                   ),
                   SizedBox(height: 40,),
@@ -305,9 +341,19 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                       ),
                       child: TextButton(
                         onPressed: (){
-                          Navigator.pop(context);
+                          setState(() {
+                            _makePhoneCall('tel:${widget.model.phoneNumber}');
+                          });
                         },
-                        child: Text('Забронировать', style: TextStyle(color: Colors.white, fontFamily: 'SFPro', fontSize: 13),),),
+                        child: Text(
+                          'Забронировать',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'SFPro',
+                              fontSize: 13
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 24,)
@@ -317,52 +363,15 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
           ),
         ),
       ),
-      // floatingActionButton: Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //   children: [
-      //     Align(
-      //       alignment: Alignment.topLeft,
-      //       child: Padding(
-      //         padding: const EdgeInsets.symmetric(vertical: 61, horizontal: 20),
-      //         child: IconButton(
-      //             onPressed: () => Navigator.pop(context),
-      //             icon: Icon(Icons.arrow_back_ios, size: 20,)
-      //         ),
-      //       ),
-      //     ),
-      //     Align(
-      //       alignment: Alignment.topRight,
-      //       child: Padding(
-      //         padding: const EdgeInsets.symmetric(vertical: 52, horizontal: 10),
-      //         child: Column(
-      //           children: [
-      //             IconButton(
-      //                 onPressed: (){},
-      //                 icon: Icon(
-      //                   Icons.favorite,
-      //                   shadows: [
-      //                     BoxShadow(
-      //                       color: Colors.black12,
-      //                       spreadRadius: 2,
-      //                       blurRadius: 2,
-      //                       offset: Offset(1, 1),
-      //                     )
-      //                   ],
-      //                   size: 32,
-      //                   color: Theme.of(context).primaryColor,
-      //                 )
-      //             ),
-      //             IconButton(
-      //                 onPressed: (){},
-      //                 icon: Icon(Icons.share, size: 32, color: Theme.of(context).primaryColor,)
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     )
-      //   ],
-      // ),
     );
+  }
+
+  Future<void> _makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget buildCategory(int index) {
@@ -379,7 +388,9 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
             )
           ],
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+          borderRadius: BorderRadius.all(Radius.circular(10)
+          )
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14),
         child: Center(
@@ -389,7 +400,8 @@ class _SelectedPromoWidgetState extends State<SelectedPromoWidget> {
                 fontFamily: 'SFProLight',
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: Colors.black38),
+                color: Colors.black38
+            ),
           ),
         ),
       ),

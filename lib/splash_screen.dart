@@ -1,6 +1,11 @@
 import 'dart:async';
+import 'package:FoodStorm/widgets/home_page_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:food_storm/widgets/home_page_widget.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'generated/l10n.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,8 +21,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(
         const Duration(seconds: 2),
             () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-            builder: (BuildContext context) => TabCupWidget()
+                CupertinoPageRoute(
+                    builder: (BuildContext context) => TabCupWidget()
                 )
             )
     );
@@ -26,6 +31,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       theme: ThemeData(fontFamily: 'Gilroy'),
       home: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
@@ -35,9 +47,19 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.percent_sharp, size: 70, color: Theme.of(context).primaryColor,),
+                Icon(
+                  Icons.percent_sharp,
+                  size: 70,
+                  color: Theme.of(context).primaryColor
+                ),
                 // SizedBox(width: 5,),
-                Text('Food Storm', style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 44),)
+                Text(
+                  'Food Storm',
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 44
+                  )
+                )
               ],
             ),
           ),
