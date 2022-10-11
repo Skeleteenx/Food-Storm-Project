@@ -10,5 +10,13 @@ final sLightTheme = ThemeData.light().copyWith(
     primaryColor: Colors.white,
     canvasColor: Colors.black,
     cardColor: Colors.black45,
+    highlightColor: Colors.grey.shade400,
+    dividerColor: Colors.orange,
+    splashColor: Colors.black12,
+    errorColor: Colors.blue,
+    shadowColor: Color.fromRGBO(18, 18, 29, 0.8),
+    hintColor: Colors.grey,
+    indicatorColor: Colors.black38,
+    focusColor: Colors.grey.shade300,
     appBarTheme: AppBarTheme(color: Colors.white,)
 );

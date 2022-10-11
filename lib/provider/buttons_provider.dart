@@ -5,7 +5,7 @@ class ButtonsProvider extends ChangeNotifier {
   showModalSheet(BuildContext context) {
     return showModalBottomSheet(
       clipBehavior: Clip.hardEdge,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(30.0),
@@ -25,7 +25,7 @@ class ButtonsProvider extends ChangeNotifier {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: Theme.of(context).focusColor,
                         borderRadius: BorderRadius.all(Radius.circular(15))
                     ),
                     height: 5,
@@ -43,7 +43,7 @@ class ButtonsProvider extends ChangeNotifier {
                         children: [
                           Text('Выберите город',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Theme.of(context).canvasColor,
                                 fontSize: 22,
                                 fontFamily: 'SFProBold'
                             ),
@@ -79,7 +79,15 @@ class ButtonsProvider extends ChangeNotifier {
                               ),
                               child: TextButton(
                                 onPressed: (){},
-                                child: Text('Готово', style: TextStyle(color: Colors.white, fontFamily: 'SFPro', fontSize: 13),),),
+                                child: Text(
+                                  'Готово',
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontFamily: 'SFPro',
+                                      fontSize: 13
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -109,7 +117,7 @@ class _IsCheckedState extends State<IsChecked> {
   @override
   Widget build(BuildContext context) {
     return Checkbox(
-      checkColor: Colors.white,
+      checkColor: Theme.of(context).primaryColor,
       shape: CircleBorder(),
       onChanged: (bool? value){
         setState((){

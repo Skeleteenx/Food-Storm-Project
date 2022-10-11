@@ -1,12 +1,12 @@
-import 'package:FoodStorm/widgets/selected_promotion_in_promo.dart';
+import 'package:FoodStorm/widgets/screens/selected_promotion_in_promo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/target_promo_model.dart';
-import '../provider/buttons_provider.dart';
-import '../provider/favorites_provider.dart';
+import '../../models/target_promo_model.dart';
+import '../../provider/buttons_provider.dart';
+import '../../provider/favorites_provider.dart';
 import 'add_stocks.dart';
 
 class StocksTabWidget extends StatefulWidget {
@@ -34,7 +34,7 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
     final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        shadowColor: Colors.white,
+        shadowColor: Theme.of(context).primaryColor,
           elevation: 1.0,
           toolbarHeight: 175,
           flexibleSpace: Column(
@@ -82,10 +82,10 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                       builder: (context) => AddStocks()
                                   )
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Добавить акцию',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: Theme.of(context).primaryColor,
                                     fontFamily: 'SFPro',
                                     fontSize: 13
                                 ),
@@ -105,9 +105,9 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: 'Поиск по акциям',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
                         // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
@@ -115,10 +115,10 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                           Icons.search,
                           size: 26
                         ),
-                        hintStyle: const TextStyle(
-                            color: Colors.black38
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).indicatorColor
                         ),
-                        fillColor: Colors.grey.shade300,
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -231,18 +231,17 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                           child: Container(
                                             height: 22,
                                             width: 50,
-                                            decoration: const BoxDecoration(
-                                                color: Colors.white,
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context).primaryColor,
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(9))
                                             ),
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment
-                                                  .center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 Icon(
                                                     Icons.star,
-                                                    color: Colors.orange,
+                                                    color: Theme.of(context).dividerColor,
                                                     size: 17
                                                 ),
                                                 SizedBox(width: 2),
@@ -268,8 +267,8 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                         child: Align(
                                           alignment: Alignment.topRight,
                                           child: Container(
-                                            decoration: const BoxDecoration(
-                                                color: Colors.white,
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context).primaryColor,
                                                 borderRadius: BorderRadius.only(
                                                     bottomLeft: Radius.circular(
                                                         11),
@@ -279,8 +278,7 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                             height: 32,
                                             width: 64,
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment
-                                                  .center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   temp['share_size'],
@@ -339,7 +337,7 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                                 Text(
                                                   temp.get('name_institution'),
                                                   style: TextStyle(
-                                                      color: Colors.black,
+                                                      color: Theme.of(context).canvasColor,
                                                       fontSize: 20,
                                                       fontFamily: 'SFProLight'
                                                   ),
@@ -348,7 +346,7 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                                   // 'с 18.09 до 25.09',
                                                   'с ${temp.get('start_date')} по ${temp.get('end_date')}',
                                                   style: TextStyle(
-                                                      color: Colors.grey,
+                                                      color: Theme.of(context).hintColor,
                                                       fontSize: 14,
                                                       fontFamily: 'SFProLight'),
                                                 ),
@@ -363,13 +361,16 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                             height: 42,
                                             width: 42,
                                             decoration: BoxDecoration(
+                                              color: selectedBool
+                                                  ? Colors.transparent
+                                                  : Theme.of(context).backgroundColor,
                                               shape: BoxShape.circle,
                                               border: Border.all(
                                                   color: Theme.of(context).backgroundColor
                                               ),
                                             ),
                                             child: IconButton(
-                                                onPressed: ()async {
+                                                onPressed: () async {
                                                   await favProvider.addStockToFav(
                                                       temp['basic_description'],
                                                       temp['short_description'],
@@ -386,11 +387,18 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                                                       temp['image'],
                                                       temp['icon_res'],
                                                   );
+                                                  setState(() {
+                                                    selectedBool = !selectedBool;
+                                                  });
                                                 },
-                                                icon: Icon(
+                                                icon: selectedBool ? Icon(
                                                   CupertinoIcons.heart,
                                                   size: 27,
-                                                  color: Theme.of(context).backgroundColor,
+                                                  color: Theme.of(context).backgroundColor
+                                                ) : Icon(
+                                                  CupertinoIcons.heart_fill,
+                                                  size: 27,
+                                                  color: Theme.of(context).primaryColor,
                                                 )
                                             ),
                                           ),
@@ -484,7 +492,9 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: selectedIndex == index ? Colors.grey.shade300 : Colors.transparent,
+            color: selectedIndex == index
+                ? Theme.of(context).focusColor
+                : Colors.transparent,
             borderRadius: const BorderRadius.all(Radius.circular(10))
         ),
         child: Padding(
@@ -497,8 +507,8 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: selectedIndex == index
-                      ? Colors.black54
-                      : Colors.black38
+                      ? Theme.of(context).cardColor
+                      : Theme.of(context).indicatorColor
               ),
             ),
           ),
@@ -506,4 +516,5 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
       ),
     );
   }
+
 }

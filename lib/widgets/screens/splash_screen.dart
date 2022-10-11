@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'package:FoodStorm/widgets/home_page_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'generated/l10n.dart';
-
+import '../../generated/l10n.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,18 +12,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(
-        const Duration(seconds: 2),
-            () => Navigator.of(context).pushReplacement(
-                CupertinoPageRoute(
-                    builder: (BuildContext context) => TabCupWidget()
-                )
-            )
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +39,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
                 // SizedBox(width: 5,),
                 Text(
-                  'Food Storm',
+                  (S.of(context).splash_screen_title),
+                  // 'Food Storm',
                   style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontSize: 44

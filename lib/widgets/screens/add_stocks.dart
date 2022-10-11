@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:provider/provider.dart';
-import '../generated/l10n.dart';
-import '../provider/send_message_provider.dart';
+import '../../generated/l10n.dart';
+import '../../provider/send_message_provider.dart';
 
 class AddStocks extends StatefulWidget {
   AddStocks({Key? key}) : super(key: key);
@@ -69,7 +69,7 @@ class _AddStocksState extends State<AddStocks> {
     final h3 = TextStyle(
       fontSize: 14,
       fontFamily: 'SFPro',
-      color: Colors.black45
+      color: Theme.of(context).cardColor
     );
 
     final messProvider = Provider.of<SendMessageProvider>(context);
@@ -82,26 +82,40 @@ class _AddStocksState extends State<AddStocks> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Добавление акции', style: h1),
+                  Text(
+                      S.of(context).adding_a_promotion,
+                      style: h1
+                  ),
                   SizedBox(height: 16,),
-                  Text('Если вы менеджер ресторана и хотите добавить акцию, то пожалуйста заполните и отправьте форму ниже. Это бесплатно.', style: h3,),
+                  Text(
+                      'Если вы менеджер ресторана и хотите добавить акцию, то пожалуйста заполните и отправьте форму ниже. Это бесплатно.',
+                    style: h3
+                  ),
                   SizedBox(height: 32,),
-                  Text('Название заведения', style: h2,),
+                  Text(
+                    'Название заведения',
+                    style: h2
+                  ),
                   SizedBox(height: 8,),
                   SizedBox(
                     height: 40,
                     child: TextField(
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(16)
+                      ],
                       style: textFieldStyle,
                       controller: _nameInstitutionController,
                       decoration: InputDecoration(
                         labelText: 'Введите название',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
-                        hintStyle: TextStyle(color: Colors.black38),
-                        fillColor: Colors.grey.shade300,
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).indicatorColor
+                        ),
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -117,19 +131,26 @@ class _AddStocksState extends State<AddStocks> {
                   Text('Название акции', style: h2,),
                   SizedBox(height: 8,),
                   SizedBox(
-                    height: 40,
+                    // height: 40,
                     child: TextField(
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(60)
+                      ],
+                      minLines: 1,
+                      maxLines: 5,
                       style: textFieldStyle,
                       controller: _nameStocksController,
                       decoration: InputDecoration(
                         labelText: 'Введите название',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
-                        hintStyle: TextStyle(color: Colors.black38),
-                        fillColor: Colors.grey.shade300,
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).indicatorColor
+                        ),
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -157,11 +178,11 @@ class _AddStocksState extends State<AddStocks> {
                       hintText: 'Введите описание',
                       hintStyle: TextStyle(
                           fontSize: 14,
-                          color: Colors.black38,
+                          color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
                       ),
                       // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                      fillColor: Colors.grey.shade300,
+                      fillColor: Theme.of(context).focusColor,
                       filled: true,
                       border: OutlineInputBorder(
                           borderSide: const BorderSide(
@@ -184,11 +205,11 @@ class _AddStocksState extends State<AddStocks> {
                       hintText: 'Введите описание',
                       hintStyle: TextStyle(
                           fontSize: 14,
-                          color: Colors.black38,
+                          color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
                       ),
                       // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                      fillColor: Colors.grey.shade300,
+                      fillColor: Theme.of(context).focusColor,
                       filled: true,
                       border: OutlineInputBorder(
                           borderSide: const BorderSide(
@@ -213,7 +234,7 @@ class _AddStocksState extends State<AddStocks> {
                       obscureText: false,
                       textInputAction: TextInputAction.done,
                       validator: (input) =>
-                      input!.length < 3 ? S.of(context).cup_bar_map : null,
+                      input!.length < 3 ? S.of(context).add_stock : null,
                       onTap: () => messProvider.showPickerDateStart(context).then((context){
                         _deadControllerStart = TextEditingController(
                           text: messProvider.getDeadlineStart,
@@ -225,10 +246,10 @@ class _AddStocksState extends State<AddStocks> {
                         labelText: 'Выберите дату',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
-                        fillColor: Colors.grey.shade300,
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -278,11 +299,11 @@ class _AddStocksState extends State<AddStocks> {
                         labelText: 'Выберите дату',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
                         // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                        fillColor: Colors.grey.shade300,
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -333,7 +354,7 @@ class _AddStocksState extends State<AddStocks> {
                             width: 158,
                             height: 144,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
+                              color: Theme.of(context).focusColor,
                               borderRadius: BorderRadius.all(Radius.circular(11)),
                             ),
                           ),
@@ -354,18 +375,20 @@ class _AddStocksState extends State<AddStocks> {
                       autocorrect: false,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
-                        MaskedInputFormatter('## (###)-###-##-##')
+                        MaskedInputFormatter('+# (###)-###-##-##')
                       ],
                       controller: _phoneNumberController,
                       decoration: InputDecoration(
                         labelText: 'Введите номер телефона',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
-                        hintStyle: TextStyle(color: Colors.black38),
-                        fillColor: Colors.grey.shade300,
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).indicatorColor
+                        ),
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -395,12 +418,14 @@ class _AddStocksState extends State<AddStocks> {
                         labelText: 'Введите ваш e-mail',
                         labelStyle: TextStyle(
                             fontSize: 14,
-                            color: Colors.black38,
+                            color: Theme.of(context).indicatorColor,
                             fontFamily: 'SFProLight'
                         ),
                         // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                        hintStyle: TextStyle(color: Colors.black38),
-                        fillColor: Colors.grey.shade300,
+                        hintStyle: TextStyle(
+                            color: Theme.of(context).indicatorColor
+                        ),
+                        fillColor: Theme.of(context).focusColor,
                         filled: true,
                         border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -437,7 +462,7 @@ class _AddStocksState extends State<AddStocks> {
                         child: Text(
                           'Отправить',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).primaryColor,
                               fontFamily: 'SFPro',
                               fontSize: 13
                           ),

@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'fav_tab_widget.dart';
-import 'maps_tab_widget.dart';
-import 'stocks_tab_widget.dart';
+import 'screens/fav_tab_widget.dart';
+import 'screens/maps_tab_widget.dart';
+import 'screens/stocks_tab_widget.dart';
 
-class TabCupWidget extends StatefulWidget {
-  const TabCupWidget({Key? key}) : super(key: key);
+class CupertinoTabWidget extends StatefulWidget {
+  const CupertinoTabWidget({Key? key}) : super(key: key);
 
   @override
-  State<TabCupWidget> createState() => _TabCupWidgetState();
+  State<CupertinoTabWidget> createState() => _CupertinoTabWidgetState();
 }
 
-class _TabCupWidgetState extends State<TabCupWidget> {
+class _CupertinoTabWidgetState extends State<CupertinoTabWidget> {
   List<String> categories = ['Все', 'Фастфуд', 'Пицца', 'Шаурма', 'Роллы', 'Бургеры'];
   int selectedIndex = 0;
   final List<Widget> _tabs = [
@@ -22,9 +22,10 @@ class _TabCupWidgetState extends State<TabCupWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CupertinoPageScaffold(
+    return CupertinoPageScaffold(
         child: CupertinoTabScaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Theme.of(context).primaryColor,
           tabBar: CupertinoTabBar(
             activeColor: Theme.of(context).backgroundColor,
             items: const [
@@ -40,7 +41,7 @@ class _TabCupWidgetState extends State<TabCupWidget> {
                     Icons.location_on_outlined,
                     // color: Theme.of(context).primaryColor
                   ),
-                  label: 'Карта'
+                  label: 'Карта',
               ),
               BottomNavigationBarItem(
                   icon: Icon(
@@ -55,7 +56,6 @@ class _TabCupWidgetState extends State<TabCupWidget> {
             return _tabs[index];
           },
         ),
-      ),
     );
   }
   Widget buildCategory (int index){
@@ -68,7 +68,7 @@ class _TabCupWidgetState extends State<TabCupWidget> {
       child: Container(
         decoration: BoxDecoration(
             color: selectedIndex == index
-                ? Colors.grey.shade300
+                ? Theme.of(context).focusColor
                 : Colors.transparent,
             borderRadius: const BorderRadius.all(Radius.circular(10))
         ),
@@ -82,8 +82,8 @@ class _TabCupWidgetState extends State<TabCupWidget> {
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                   color: selectedIndex == index
-                  ? Colors.black54
-                  : Colors.black38
+                  ? Theme.of(context).cardColor
+                  : Theme.of(context).indicatorColor
               ),
             ),
           ),

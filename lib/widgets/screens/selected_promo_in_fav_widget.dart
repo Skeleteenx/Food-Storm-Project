@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/target_promo_model.dart';
-import '../provider/favorites_provider.dart';
+import '../../models/target_promo_model.dart';
+import '../../provider/favorites_provider.dart';
 
 class SelectedPromoInFavWidget extends StatefulWidget {
   SelectedPromoInFavWidget({
@@ -110,7 +110,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                             offset: Offset(0.5, 0.5),
                           )
                         ],
-                        color: Colors.white,
+                        color: Theme.of(context).primaryColor,
                         borderRadius: BorderRadius.all(Radius.circular(13))),
                     child: Center(
                         child: Text(
@@ -131,7 +131,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 'с ${widget.model.startDate} по ${widget.model.endDate}',
                 style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey.shade500
+                    color: Theme.of(context).highlightColor
                 ),
               ),
               SizedBox(
@@ -162,7 +162,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 height: 24,
               ),
               Container(
-                color: Colors.grey.shade300,
+                color: Theme.of(context).focusColor,
                 height: 1,
                 width: double.maxFinite,
               ),
@@ -172,7 +172,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               Text(
                 'О ресторане',
                 style: TextStyle(
-                    color: Colors.grey.shade400,
+                    color: Theme.of(context).highlightColor,
                     fontSize: 14
                 ),
               ),
@@ -199,7 +199,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                   ),
                   Icon(
                     Icons.star,
-                    color: Colors.orange,
+                    color: Theme.of(context).dividerColor,
                     size: 14,
                   ),
                   Text(
@@ -233,7 +233,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               Text(
                 'Адрес',
                 style: TextStyle(
-                    color: Colors.grey.shade400,
+                    color: Theme.of(context).highlightColor,
                     fontSize: 14,
                     fontFamily: 'SFProLight'
                 ),
@@ -259,7 +259,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               SizedBox(height: 28,),
               Text(
                 'Режим работы', style: TextStyle(
-                  color: Colors.grey.shade400,
+                  color: Theme.of(context).highlightColor,
                   fontSize: 14,
                   fontFamily: 'SFProLight'
               ),
@@ -326,7 +326,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                   Text(
                     'Пожаловаться',
                     style: TextStyle(
-                        color: Colors.grey.shade400,
+                        color: Theme.of(context).highlightColor,
                         fontSize: 16,
                         fontFamily: 'SFProLight'
                     ),
@@ -349,7 +349,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                         child: Text(
                           'Забронировать',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).primaryColor,
                               fontFamily: 'SFPro',
                               fontSize: 13
                           ),
@@ -382,13 +382,13 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
       decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: Theme.of(context).splashColor,
               spreadRadius: 0.1,
               blurRadius: 0.1,
               offset: Offset(0.1, 0.1),
             )
           ],
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.all(Radius.circular(10)
           )
       ),
@@ -401,7 +401,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 fontFamily: 'SFProLight',
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: Colors.black38
+                color: Theme.of(context).indicatorColor
             ),
           ),
         ),

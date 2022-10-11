@@ -15,8 +15,6 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
 
   late GoogleMapController mapController;
 
-  final Set<Marker> _markers = {};
-
   // Completer<GoogleMapController> _controller = Completer();
 
    _onMapCreated(GoogleMapController controller) {
@@ -35,24 +33,25 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
           mapType: MapType.normal,
           mapToolbarEnabled: false,
           onMapCreated: _onMapCreated,
+          minMaxZoomPreference: MinMaxZoomPreference.unbounded,
           initialCameraPosition: CameraPosition(
             target: const LatLng(55.7813726, 49.2132881),
             zoom: 15
           ),
       ),
         Positioned(
-          bottom: 50,
+          bottom: 60,
             right: 10,
             child: SizedBox(
               height: 49,
               width: 49,
               child: FloatingActionButton(
-                  onPressed: _animateToUser,
-                backgroundColor: Color.fromRGBO(252, 252, 252, 1),
+                onPressed: _animateToUser,
+                backgroundColor: Theme.of(context).primaryColor,
                   child: Icon(
                     Icons.emoji_people,
                     size: 33,
-                    color: Color.fromRGBO(18, 18, 29, 0.8),
+                    color: Theme.of(context).shadowColor,
                 ),
               ),
             )

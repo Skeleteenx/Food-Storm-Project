@@ -27,7 +27,9 @@ class _CustomCheckBoxState extends State<CustomCheckBox> {
         width: 26,
         decoration: BoxDecoration(
           border: Border.all(
-              color: isSelected ? Theme.of(context).backgroundColor : Colors.black38,
+              color: isSelected
+                  ? Theme.of(context).backgroundColor
+                  : Theme.of(context).indicatorColor,
           ),
           // color: isSelected ? Theme.of(context).backgroundColor : Colors.transparent,
           shape: BoxShape.circle,

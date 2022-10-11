@@ -1,15 +1,16 @@
-import 'package:FoodStorm/widgets/selected_promo_in_fav_widget.dart';
-import 'package:FoodStorm/widgets/stocks_tab_widget.dart';
+import 'package:FoodStorm/widgets/screens/selected_promo_in_fav_widget.dart';
+import 'package:FoodStorm/widgets/screens/stocks_tab_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
-import '../hive/hive_model.dart';
-import '../models/target_promo_model.dart';
-import '../provider/favorites_provider.dart';
-import 'home_page_widget.dart';
+import '../../hive/hive_model.dart';
+import '../../models/target_promo_model.dart';
+import '../../provider/favorites_provider.dart';
+import '../../provider/mat_bar_provider.dart';
+import '../cupertino_tab_widget.dart';
 
 class FavTabWidget extends StatefulWidget {
   FavTabWidget({Key? key}) : super(key: key);
@@ -73,7 +74,7 @@ class _StocksPresentState extends State<StocksPresent> {
                             .of(context)
                             .showSnackBar(
                             SnackBar(
-                                backgroundColor: Color.fromRGBO(233, 245, 238, 1),
+                              backgroundColor: Color.fromRGBO(233, 245, 238, 1),
                                 content: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
@@ -166,7 +167,7 @@ class _StocksPresentState extends State<StocksPresent> {
                     child: Text(
                       'Очистить',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Theme.of(context).canvasColor,
                         fontSize: 14,
                         fontFamily: 'SFProLight'
                     ),),
@@ -217,7 +218,7 @@ class _StocksPresentState extends State<StocksPresent> {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12,
+                            color: Theme.of(context).splashColor,
                             spreadRadius: 1,
                             blurRadius: 1,
                             offset: Offset(0, 1),
@@ -257,7 +258,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                             height: 24,
                                             width: 45,
                                             decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: Theme.of(context).primaryColor,
                                                 borderRadius: BorderRadius.only(
                                                     bottomRight: Radius.circular(8),
                                                     topRight: Radius.circular(8)
@@ -295,7 +296,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                                             .of(context)
                                                             .showSnackBar(
                                                             SnackBar(
-                                                              backgroundColor: Color.fromRGBO(233, 245, 238, 1),
+                                                                backgroundColor: Color.fromRGBO(233, 245, 238, 1),
                                                                 content: Row(
                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                   children: [
@@ -316,7 +317,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                                                           style: TextStyle(
                                                                               fontSize: 14,
                                                                               fontFamily: 'SFProLight',
-                                                                              color: Colors.blue
+                                                                              color: Theme.of(context).errorColor
                                                                         ),
                                                                       ),
                                                                     )
@@ -334,7 +335,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                               ],
                                               CupertinoIcons.heart_fill,
                                               size: 25,
-                                              color: Colors.white,
+                                              color: Theme.of(context).primaryColor,
                                             ),
                                             )
                                           ],
@@ -350,7 +351,7 @@ class _StocksPresentState extends State<StocksPresent> {
                             alignment: Alignment.bottomCenter,
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.all(
                                     Radius.circular(11)
                                 ),
@@ -384,7 +385,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                                 // 'с 18.10 до 26.05',
                                                 ("с ${hiveList[index].start_date} по ${hiveList[index].end_date}"),
                                                 style: TextStyle(
-                                                    color: Colors.grey,
+                                                    color: Theme.of(context).hintColor,
                                                     fontSize: 10,
                                                     fontFamily: 'SFProLight'
                                                 ),
@@ -418,7 +419,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                             children: [
                                               Icon(
                                                 Icons.star,
-                                                color: Colors.orange,
+                                                color: Theme.of(context).dividerColor,
                                                 size: 12,
                                               ),
                                               Text(
@@ -465,6 +466,7 @@ class _ArentStocksState extends State<ArentStocks> {
         fontSize: 14,
         fontFamily: 'SFPro'
     );
+    final tabProvider = Provider.of<MatTabBarProvider>(context);
     return Scaffold(
       appBar: new AppBar(
         elevation: 0.0,
@@ -473,7 +475,7 @@ class _ArentStocksState extends State<ArentStocks> {
           style: TextStyle(
               fontSize: 24,
               fontFamily: 'SFProSemibold',
-              color: Colors.black,
+              color: Theme.of(context).canvasColor,
           ),
         ),
       ),
@@ -487,7 +489,8 @@ class _ArentStocksState extends State<ArentStocks> {
                   'Здесь отображаются избранные акции.',
                   style: h1
               ),
-              Text('Нажмите на сердечко, чтобы добавить акцию',
+              Text(
+                'Нажмите на сердечко, чтобы добавить акцию',
                 style: h1,
               ),
               Text(
@@ -504,11 +507,13 @@ class _ArentStocksState extends State<ArentStocks> {
                       borderRadius: BorderRadius.all(Radius.circular(11))
                   ),
                   child: TextButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      tabProvider.onItemTapped(0);
+                    },
                     child: Text(
                       'Перейти к акциям',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Theme.of(context).primaryColor,
                           fontFamily: 'SFPro',
                           fontSize: 14
                       ),
