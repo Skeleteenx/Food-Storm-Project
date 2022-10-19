@@ -41,7 +41,8 @@ class ButtonsProvider extends ChangeNotifier {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Выберите город',
+                          Text(
+                            'Выберите город',
                             style: TextStyle(
                                 color: Theme.of(context).canvasColor,
                                 fontSize: 22,

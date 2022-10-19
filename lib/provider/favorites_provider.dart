@@ -38,19 +38,7 @@ class FavoritesProvider extends ChangeNotifier{
     final box = Boxes.getPostFromFavorite();
     if (box.containsKey(name_institution)) {
     } else {
-      box.put(name_institution, favoriteStocks)
-      //     .whenComplete(
-      //         () => ScaffoldMessenger
-      //             .of(context)
-      //             .showSnackBar(
-      //             SnackBar(
-      //                 content: Text(
-      //                     'Уже в избранном'
-      //                 )
-      //             )
-      //         )
-      // )
-      ;
+      box.put(name_institution, favoriteStocks);
       box.values;
       box.keys;
     }
@@ -64,7 +52,7 @@ class FavoritesProvider extends ChangeNotifier{
     await box.deleteAt(groupIndex);
 }
 
-Future deleteAllStocks() async {
+ Future deleteAllStocks() async {
   if(!Hive.isAdapterRegistered(0)){
     Hive.registerAdapter(HiveModelAdapter());
   }

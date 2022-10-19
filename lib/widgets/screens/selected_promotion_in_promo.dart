@@ -16,7 +16,7 @@ class SelectedPromoWidgetInPromo extends StatefulWidget {
 }
 
 class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo> {
-  List<String> categories = [
+  List categories = [
     'Все',
     'Фастфуд',
     'Пицца',
@@ -376,35 +376,35 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
 
   Widget buildCategory(int index) {
     return Container(
-      height: 16,
-      margin: EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).splashColor,
-              spreadRadius: 0.1,
-              blurRadius: 0.1,
-              offset: Offset(0.1, 0.1),
-            )
-          ],
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.all(Radius.circular(10)
-          )
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Center(
-          child: Text(
-            categories[index],
-            style: TextStyle(
-                fontFamily: 'SFProLight',
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Theme.of(context).indicatorColor
+          height: 16,
+          margin: EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).splashColor,
+                  spreadRadius: 0.1,
+                  blurRadius: 0.1,
+                  offset: Offset(0.1, 0.1),
+                )
+              ],
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.all(Radius.circular(10)
+              )
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Center(
+              child: Text(
+                categories[index],
+                style: TextStyle(
+                    fontFamily: 'SFProLight',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Theme.of(context).indicatorColor
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 }

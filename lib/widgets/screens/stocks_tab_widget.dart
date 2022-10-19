@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:FoodStorm/widgets/screens/selected_promotion_in_promo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,9 +20,9 @@ class StocksTabWidget extends StatefulWidget {
 
 class _StocksTabWidgetState extends State<StocksTabWidget> {
   List<String> categories = ['Все', 'Фастфуд', 'Пицца', 'Шаурма', 'Роллы', 'Бургеры'];
+  String name = '';
   int selectedIndex = 0;
-  bool selectedBool = true;
-
+  int pressedAttentionIndex = -1;
   final ref = FirebaseFirestore.instance.collection('stocks');
 
   @override
@@ -33,446 +35,865 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
     final providerButt = Provider.of<ButtonsProvider>(context);
     final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        shadowColor: Theme.of(context).primaryColor,
-          elevation: 1.0,
-          toolbarHeight: 175,
-          flexibleSpace: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 42, 14, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            appBar: AppBar(
+                shadowColor: Theme.of(context).primaryColor,
+                elevation: 1.0,
+                toolbarHeight: 175,
+                flexibleSpace: Column(
                     children: [
-                      GestureDetector(
-                        onTap: (){
-                          providerButt.showModalSheet(context);
-                        },
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 42, 14, 0),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: const [
-                             Text(
-                               'Тольятти',
-                               style: TextStyle(
-                                   fontSize: 16,
-                                   fontFamily: 'SFPro'
-                               ),
-                             ),
-                            // Text(S.of(context).cup_bar_map),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 11,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                providerButt.showModalSheet(context);
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    'Тольятти',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'SFPro'
+                                    ),
+                                  ),
+                                  // Text(S.of(context).cup_bar_map),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 11,
+                                  ),
+                                ],
+                              ),
                             ),
+                            SizedBox(
+                              height: 35,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Theme
+                                        .of(context)
+                                        .backgroundColor,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(11))
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: TextButton(
+                                    onPressed: () =>
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                                builder: (context) =>
+                                                    AddStocks()
+                                            )
+                                        ),
+                                    child: Text(
+                                      'Добавить акцию',
+                                      style: TextStyle(
+                                          color: Theme
+                                              .of(context)
+                                              .primaryColor,
+                                          fontFamily: 'SFPro',
+                                          fontSize: 13
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 35,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).backgroundColor,
-                              borderRadius: const BorderRadius.all(Radius.circular(11))
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: TextButton(
-                              onPressed: () => Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => AddStocks()
-                                  )
-                              ),
-                              child: Text(
-                                'Добавить акцию',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontFamily: 'SFPro',
-                                    fontSize: 13
+                      const SizedBox(height: 15),
+                       SizedBox(
+                         height: 40,
+                         child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: TextField(
+                              onChanged: (val){
+                                setState(() {
+                                  name = val;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Поиск по акциям',
+                                labelStyle: TextStyle(
+                                    fontSize: 14,
+                                    color: Theme
+                                        .of(context)
+                                        .indicatorColor,
+                                    fontFamily: 'SFProLight'
+                                ),
+                                // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
+                                prefixIcon: const Icon(
+                                    Icons.search,
+                                    size: 26
+                                ),
+                                hintStyle: TextStyle(
+                                    color: Theme
+                                        .of(context)
+                                        .indicatorColor
+                                ),
+                                fillColor: Theme
+                                    .of(context)
+                                    .focusColor,
+                                filled: true,
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      width: 0,
+                                      style: BorderStyle.none,
+                                    ),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(11))
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 15),
-                SizedBox(
-                  height: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Поиск по акциям',
-                        labelStyle: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).indicatorColor,
-                            fontFamily: 'SFProLight'
-                        ),
-                        // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          size: 26
-                        ),
-                        hintStyle: TextStyle(
-                            color: Theme.of(context).indicatorColor
-                        ),
-                        fillColor: Theme.of(context).focusColor,
-                        filled: true,
-                        border: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(11))
+                       ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: SizedBox(
+                          height: 30,
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) =>
+                                buildCategory(index),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: SizedBox(
-                    height: 30,
-                    child: ListView.builder(
+                    ])
+            ),
+            body: StreamBuilder<QuerySnapshot>(
+                stream: ref.snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshots) {
+                    return (snapshots.hasData)
+                        ? ListView.builder(
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      itemCount: snapshots.data!.docs.length,
                       physics: const BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) => buildCategory(index),
-                    ),
-                  ),
-                ),
-              ])
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: ref.snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if(snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (context, index) {
-                var temp = snapshot.data!.docs[index];
-                return GestureDetector(
-                  onTap: (){
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (_) => SelectedPromoWidgetInPromo(
-                              model: TargetPromoModel(
-                                  shortDescription: temp['short_description'],
-                                  email: temp['email'],
-                                  endDate: temp['end_date'],
-                                  basicDescription: temp['basic_description'],
-                                  nameStocks: temp['name_stocks'],
-                                  nameInstitution: temp['name_institution'],
-                                  startDate: temp['start_date'],
-                                  phoneNumber: temp['phone_number'],
-                                  informationAboutTheRest: temp['information_about_the_rest'],
-                                  operatingMode: temp['operating_mode'],
-                                  shareSize: temp['share_size'],
-                                  resRating: temp['res_rating'],
-                                  image: temp['image'],
-                                  iconRes: temp['icon_res']
-                              ),
-                            ),
-                        )
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 12),
-                      height: 331,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: Offset(0, 2),
-                            )
-                          ],
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: const BorderRadius.all(Radius.circular(20))
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                              width: double.infinity,
-                              height: 192,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                      '${temp['image']}',
-                                    ),
-                                    fit: BoxFit.fill,
-                                  ),
-                                  // color: Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(20),
-                                      topLeft: Radius.circular(20)
-                                  )
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.bottomLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 14, vertical: 14),
-                                          child: Container(
-                                            height: 22,
-                                            width: 50,
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context).primaryColor,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(9))
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                    Icons.star,
-                                                    color: Theme.of(context).dividerColor,
-                                                    size: 17
-                                                ),
-                                                SizedBox(width: 2),
-                                                Text(
-                                                  temp['res_rating'],
-                                                  style: TextStyle(
-                                                      fontSize: 15),
-                                                ),
-                                              ],
-                                            ),
+                      itemBuilder: (context, index) {
+                        var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
+                        var temp = snapshots.data!.docs[index];
+                        if(name.isEmpty) {
+                         late int _expandedIndex;
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (_) =>
+                                        SelectedPromoWidgetInPromo(
+                                          model: TargetPromoModel(
+                                              shortDescription: temp['short_description'],
+                                              email: temp['email'],
+                                              endDate: temp['end_date'],
+                                              basicDescription: temp['basic_description'],
+                                              nameStocks: temp['name_stocks'],
+                                              nameInstitution: temp['name_institution'],
+                                              startDate: temp['start_date'],
+                                              phoneNumber: temp['phone_number'],
+                                              informationAboutTheRest: temp['information_about_the_rest'],
+                                              operatingMode: temp['operating_mode'],
+                                              shareSize: temp['share_size'],
+                                              resRating: temp['res_rating'],
+                                              image: temp['image'],
+                                              iconRes: temp['icon_res']
                                           ),
                                         ),
+                                  )
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16
+                              ),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 12),
+                                height: 331,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 2),
                                       )
                                     ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 14
-                                        ),
-                                        child: Align(
-                                          alignment: Alignment.topRight,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context).primaryColor,
-                                                borderRadius: BorderRadius.only(
-                                                    bottomLeft: Radius.circular(
-                                                        11),
-                                                    topLeft: Radius.circular(11)
-                                                )
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(20))
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 192,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                               '${temp['image']}',
+                                              // data['image']
                                             ),
-                                            height: 32,
-                                            width: 64,
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  temp['share_size'],
-                                                  style: TextStyle(
-                                                      color: Theme
-                                                          .of(context)
-                                                          .backgroundColor,
-                                                      fontSize: 20,
-                                                      fontFamily: 'SFProLight'
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                            fit: BoxFit.fill,
                                           ),
-                                        ),
+                                          // color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(20),
+                                              topLeft: Radius.circular(20)
+                                          )
                                       ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          Container(
-                            height: 139,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: const BorderRadius.only(
-                                  bottomRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20)
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
                                         children: [
-                                          SizedBox(
-                                            height: 40,
-                                              width: 40,
-                                              child: Image.network(
-                                                  '${temp['icon_res']}'
-                                              )
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 5
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  temp.get('name_institution'),
-                                                  style: TextStyle(
-                                                      color: Theme.of(context).canvasColor,
-                                                      fontSize: 20,
-                                                      fontFamily: 'SFProLight'
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .end,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 14,
+                                                      vertical: 14),
+                                                  child: Container(
+                                                    height: 22,
+                                                    width: 50,
+                                                    decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .primaryColor,
+                                                        borderRadius: BorderRadius
+                                                            .all(
+                                                            Radius.circular(9))
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .center,
+                                                      children: [
+                                                        Icon(
+                                                            Icons.star,
+                                                            color: Theme
+                                                                .of(context)
+                                                                .dividerColor,
+                                                            size: 17
+                                                        ),
+                                                        SizedBox(width: 2),
+                                                        Text(
+                                                          temp['res_rating'],
+                                                          style: TextStyle(
+                                                              fontSize: 15),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                Text(
-                                                  // 'с 18.09 до 25.09',
-                                                  'с ${temp.get('start_date')} по ${temp.get('end_date')}',
-                                                  style: TextStyle(
-                                                      color: Theme.of(context).hintColor,
-                                                      fontSize: 14,
-                                                      fontFamily: 'SFProLight'),
+                                              )
+                                            ],
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .symmetric(
+                                                    vertical: 14
                                                 ),
-                                              ],
-                                            ),
+                                                child: Align(
+                                                  alignment: Alignment.topRight,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .primaryColor,
+                                                        borderRadius: BorderRadius
+                                                            .only(
+                                                            bottomLeft: Radius
+                                                                .circular(
+                                                                11),
+                                                            topLeft: Radius
+                                                                .circular(11)
+                                                        )
+                                                    ),
+                                                    height: 32,
+                                                    width: 64,
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .center,
+                                                      children: [
+                                                        Text(
+                                                          temp['share_size'],
+                                                          style: TextStyle(
+                                                              color: Theme
+                                                                  .of(context)
+                                                                  .backgroundColor,
+                                                              fontSize: 20,
+                                                              fontFamily: 'SFProLight'
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           )
                                         ],
                                       ),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            height: 42,
-                                            width: 42,
-                                            decoration: BoxDecoration(
-                                              color: selectedBool
-                                                  ? Colors.transparent
-                                                  : Theme.of(context).backgroundColor,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Theme.of(context).backgroundColor
+                                    ),
+                                    Container(
+                                      height: 139,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Theme
+                                            .of(context)
+                                            .primaryColor,
+                                        borderRadius: const BorderRadius.only(
+                                            bottomRight: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20)
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                        height: 40,
+                                                        width: 40,
+                                                        child: Image.network(
+                                                            '${temp['icon_res']}'
+                                                        )
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 5
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Text(
+                                                            temp.get(
+                                                                'name_institution'),
+                                                            style: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .canvasColor,
+                                                                fontSize: 20,
+                                                                fontFamily: 'SFProLight'
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            // 'с 18.09 до 25.09',
+                                                            'с ${temp.get(
+                                                                'start_date')} по ${temp
+                                                                .get(
+                                                                'end_date')}',
+                                                            style: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .hintColor,
+                                                                fontSize: 14,
+                                                                fontFamily: 'SFProLight'
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 42,
+                                                      width: 42,
+                                                      decoration: BoxDecoration(
+                                                        color: pressedAttentionIndex == index
+                                                            ? Colors.transparent
+                                                            : Theme
+                                                            .of(context)
+                                                            .backgroundColor,
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                            color: Theme
+                                                                .of(context)
+                                                                .backgroundColor
+                                                        ),
+                                                      ),
+                                                      child: IconButton(
+                                                          onPressed: () async {
+                                                            await favProvider
+                                                                .addStockToFav(
+                                                              temp['basic_description'],
+                                                              temp['short_description'],
+                                                              temp['email'],
+                                                              temp['end_date'],
+                                                              temp['name_institution'],
+                                                              temp['name_stocks'],
+                                                              temp['start_date'],
+                                                              temp['phone_number'],
+                                                              temp['information_about_the_rest'],
+                                                              temp['operating_mode'],
+                                                              temp['share_size'],
+                                                              temp['res_rating'],
+                                                              temp['image'],
+                                                              temp['icon_res'],
+                                                            );
+                                                            setState(() {
+                                                              pressedAttentionIndex = index;
+                                                            });
+                                                          },
+                                                          icon: pressedAttentionIndex == index
+                                                              ? Icon(
+                                                              CupertinoIcons.heart,
+                                                              size: 27,
+                                                              color: Theme
+                                                                  .of(context)
+                                                                  .backgroundColor
+                                                          )
+                                                              : Icon(
+                                                            CupertinoIcons.heart_fill,
+                                                            size: 27,
+                                                            color: Theme.of(context).primaryColor,
+                                                          )
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 6,
+                                                    ),
+                                                    Container(
+                                                      height: 42,
+                                                      width: 42,
+                                                      decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .backgroundColor,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            _makePhoneCall(
+                                                                'tel:${temp['phone_number']}');
+                                                          },
+                                                          icon: Icon(
+                                                            Icons
+                                                                .phone_enabled_outlined,
+                                                            size: 26,
+                                                            color: Theme
+                                                                .of(context)
+                                                                .primaryColor,
+                                                          )
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Padding(
+                                              padding: const EdgeInsets
+                                                  .fromLTRB(
+                                                  0, 0, 60, 0),
+                                              child: Text(
+                                                temp.get('short_description'),
+                                                style: TextStyle(
+                                                    fontFamily: 'SFProLight',
+                                                    fontSize: 16
+                                                ),
                                               ),
-                                            ),
-                                            child: IconButton(
-                                                onPressed: () async {
-                                                  await favProvider.addStockToFav(
-                                                      temp['basic_description'],
-                                                      temp['short_description'],
-                                                      temp['email'],
-                                                      temp['end_date'],
-                                                      temp['name_institution'],
-                                                      temp['name_stocks'],
-                                                      temp['start_date'],
-                                                      temp['phone_number'],
-                                                      temp['information_about_the_rest'],
-                                                      temp['operating_mode'],
-                                                      temp['share_size'],
-                                                      temp['res_rating'],
-                                                      temp['image'],
-                                                      temp['icon_res'],
-                                                  );
-                                                  setState(() {
-                                                    selectedBool = !selectedBool;
-                                                  });
-                                                },
-                                                icon: selectedBool ? Icon(
-                                                  CupertinoIcons.heart,
-                                                  size: 27,
-                                                  color: Theme.of(context).backgroundColor
-                                                ) : Icon(
-                                                  CupertinoIcons.heart_fill,
-                                                  size: 27,
-                                                  color: Theme.of(context).primaryColor,
-                                                )
-                                            ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        if(data['name_institution']
+                        .toString()
+                        .toLowerCase()
+                        .startsWith(name.toLowerCase())){
+                          int selInd = 0;
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (_) =>
+                                        SelectedPromoWidgetInPromo(
+                                          model: TargetPromoModel(
+                                              shortDescription: temp['short_description'],
+                                              email: temp['email'],
+                                              endDate: temp['end_date'],
+                                              basicDescription: temp['basic_description'],
+                                              nameStocks: temp['name_stocks'],
+                                              nameInstitution: temp['name_institution'],
+                                              startDate: temp['start_date'],
+                                              phoneNumber: temp['phone_number'],
+                                              informationAboutTheRest: temp['information_about_the_rest'],
+                                              operatingMode: temp['operating_mode'],
+                                              shareSize: temp['share_size'],
+                                              resRating: temp['res_rating'],
+                                              image: temp['image'],
+                                              iconRes: temp['icon_res']
                                           ),
-                                          const SizedBox(
-                                            width: 6,
-                                          ),
-                                          Container(
-                                            height: 42,
-                                            width: 42,
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).backgroundColor,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: IconButton(
-                                                onPressed: () {
-                                                  _makePhoneCall('tel:${temp['phone_number']}');
-                                                },
-                                                icon: Icon(
-                                                  Icons.phone_enabled_outlined,
-                                                  size: 26,
-                                                  color: Theme.of(context).primaryColor,
-                                                )
-                                            ),
-                                          ),
-                                        ],
+                                        ),
+                                  )
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 12),
+                                height: 331,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 2),
                                       )
                                     ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
-                                    child: Text(
-                                      temp.get('short_description'),
-                                      style: TextStyle(
-                                          fontFamily: 'SFProLight',
-                                          fontSize: 16
+                                    color: Theme
+                                        .of(context)
+                                        .primaryColor,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(20))
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      height: 192,
+                                      decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              // '${temp['image']}',
+                                                data['image']
+                                            ),
+                                            fit: BoxFit.fill,
+                                          ),
+                                          // color: Colors.white,
+                                          borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(20),
+                                              topLeft: Radius.circular(20)
+                                          )
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        children: [
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .end,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 14,
+                                                      vertical: 14),
+                                                  child: Container(
+                                                    height: 22,
+                                                    width: 50,
+                                                    decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .primaryColor,
+                                                        borderRadius: BorderRadius
+                                                            .all(
+                                                            Radius.circular(9))
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .center,
+                                                      children: [
+                                                        Icon(
+                                                            Icons.star,
+                                                            color: Theme
+                                                                .of(context)
+                                                                .dividerColor,
+                                                            size: 17
+                                                        ),
+                                                        SizedBox(width: 2),
+                                                        Text(
+                                                          temp['res_rating'],
+                                                          style: TextStyle(
+                                                              fontSize: 15),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .symmetric(
+                                                    vertical: 14
+                                                ),
+                                                child: Align(
+                                                  alignment: Alignment.topRight,
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .primaryColor,
+                                                        borderRadius: BorderRadius
+                                                            .only(
+                                                            bottomLeft: Radius
+                                                                .circular(
+                                                                11),
+                                                            topLeft: Radius
+                                                                .circular(11)
+                                                        )
+                                                    ),
+                                                    height: 32,
+                                                    width: 64,
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment
+                                                          .center,
+                                                      children: [
+                                                        Text(
+                                                          temp['share_size'],
+                                                          style: TextStyle(
+                                                              color: Theme
+                                                                  .of(context)
+                                                                  .backgroundColor,
+                                                              fontSize: 20,
+                                                              fontFamily: 'SFProLight'
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
                                       ),
                                     ),
-                                  )
+                                    Container(
+                                      height: 139,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Theme
+                                            .of(context)
+                                            .primaryColor,
+                                        borderRadius: const BorderRadius.only(
+                                            bottomRight: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20)
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                        height: 40,
+                                                        width: 40,
+                                                        child: Image.network(
+                                                            '${temp['icon_res']}'
+                                                        )
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 5
+                                                      ),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                          Text(
+                                                            temp.get(
+                                                                'name_institution'),
+                                                            style: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .canvasColor,
+                                                                fontSize: 20,
+                                                                fontFamily: 'SFProLight'
+                                                            ),
+                                                          ),
+                                                          Text(
+                                                            // 'с 18.09 до 25.09',
+                                                            'с ${temp.get('start_date')} по ${temp.get('end_date')}',
+                                                            style: TextStyle(
+                                                                color: Theme
+                                                                    .of(context)
+                                                                    .hintColor,
+                                                                fontSize: 14,
+                                                                fontFamily: 'SFProLight'),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      height: 42,
+                                                      width: 42,
+                                                      decoration: BoxDecoration(
+                                                        color: selInd == index
+                                                            ? Colors.transparent
+                                                            : Theme.of(context).backgroundColor,
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                            color: Theme.of(context).backgroundColor
+                                                        ),
+                                                      ),
+                                                      child: IconButton(
+                                                          onPressed: () async {
+                                                            await favProvider.addStockToFav(
+                                                              temp['basic_description'],
+                                                              temp['short_description'],
+                                                              temp['email'],
+                                                              temp['end_date'],
+                                                              temp['name_institution'],
+                                                              temp['name_stocks'],
+                                                              temp['start_date'],
+                                                              temp['phone_number'],
+                                                              temp['information_about_the_rest'],
+                                                              temp['operating_mode'],
+                                                              temp['share_size'],
+                                                              temp['res_rating'],
+                                                              temp['image'],
+                                                              temp['icon_res'],
+                                                            );
+                                                            setState(() {
+                                                              pressedAttentionIndex = index;
+                                                            });
+                                                          },
+                                                          icon: pressedAttentionIndex == index
+                                                              ? Icon(
+                                                              CupertinoIcons.heart,
+                                                              size: 27,
+                                                              color: Theme.of(context).backgroundColor
+                                                          )
+                                                              : Icon(
+                                                            CupertinoIcons.heart_fill,
+                                                            size: 27,
+                                                            color: Theme.of(context).primaryColor,
+                                                          )
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 6,
+                                                    ),
+                                                    Container(
+                                                      height: 42,
+                                                      width: 42,
+                                                      decoration: BoxDecoration(
+                                                        color: Theme
+                                                            .of(context)
+                                                            .backgroundColor,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                      child: IconButton(
+                                                          onPressed: () {
+                                                            _makePhoneCall(
+                                                                'tel:${temp['phone_number']}');
+                                                          },
+                                                          icon: Icon(
+                                                            Icons
+                                                                .phone_enabled_outlined,
+                                                            size: 26,
+                                                            color: Theme
+                                                                .of(context)
+                                                                .primaryColor,
+                                                          )
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Padding(padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
+                                              child: Text(
+                                                temp.get('short_description'),
+                                                style: TextStyle(
+                                                    fontFamily: 'SFProLight',
+                                                    fontSize: 16
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        } return Container(
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  // Text(
+                                  //   'Ничего не найдено',
+                                  //   style: TextStyle(
+                                  //       fontSize: 16,
+                                  //       fontFamily: 'SFPro'
+                                  //   ),
+                                  // )
                                 ],
                               ),
                             ),
-                          )
-                        ],
+                          );
+                        }
+                    )
+                        : Container(
+                      child: Center(
+                          child: CircularProgressIndicator()
                       ),
-                    ),
-                  ),
-                );
-              },
-            );
-          } else if(snapshot.connectionState == ConnectionState.active){
-            return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                      'Проверьте интернет соединение',
-                      style: h1
-                  ),
-                )
-            );
-          } else {
-            return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                      'В данный момент акции отсутствуют',
-                      style: h1
-                  ),
-                )
-            );
-          }
-        }
-      ),
-    );
+                    );
+                  }
+            ),
+          );
   }
 
   Future<void> _makePhoneCall(String url) async {
@@ -516,5 +937,4 @@ class _StocksTabWidgetState extends State<StocksTabWidget> {
       ),
     );
   }
-
 }

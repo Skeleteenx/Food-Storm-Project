@@ -60,10 +60,11 @@ class _StocksPresentState extends State<StocksPresent> {
               fontFamily: 'SFProLight',
             ),
             ),
-            content: const Text(
+            content: Text(
               'Вы точно хотите удалить все акции из избранного?',
               style: TextStyle(
                 fontFamily: 'SFProLight',
+                color: Theme.of(context).cardColor
               ),
             ),
             actions: [
@@ -76,7 +77,7 @@ class _StocksPresentState extends State<StocksPresent> {
                             SnackBar(
                               backgroundColor: Color.fromRGBO(233, 245, 238, 1),
                                 content: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       'Все акции удалены из избранного',
@@ -86,19 +87,6 @@ class _StocksPresentState extends State<StocksPresent> {
                                           color: Theme.of(context).canvasColor
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: (){
-
-                                      },
-                                      child: Text(
-                                        'Отменить',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontFamily: 'SFProLight',
-                                            color: Colors.blue
-                                        ),
-                                      ),
-                                    )
                                   ],
                                 )
                             )
@@ -111,6 +99,7 @@ class _StocksPresentState extends State<StocksPresent> {
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'SFProLight',
+                        color: Theme.of(context).backgroundColor
                     ),
                   ),
               ),
@@ -123,6 +112,7 @@ class _StocksPresentState extends State<StocksPresent> {
                   style: TextStyle(
                       fontSize: 16,
                       fontFamily: 'SFProLight',
+                      color: Theme.of(context).backgroundColor
                   ),
                 ),
               ),
@@ -161,7 +151,10 @@ class _StocksPresentState extends State<StocksPresent> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Избранное', style: h1,),
+                  Text(
+                    'Избранное',
+                    style: h1,
+                  ),
                   GestureDetector(
                     onTap: () => _deleteAll(context),
                     child: Text(
@@ -298,7 +291,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                                             SnackBar(
                                                                 backgroundColor: Color.fromRGBO(233, 245, 238, 1),
                                                                 content: Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
                                                                   children: [
                                                                     Text(
                                                                         'Удалено из избранного',
@@ -308,19 +301,6 @@ class _StocksPresentState extends State<StocksPresent> {
                                                                         color: Theme.of(context).canvasColor
                                                                       ),
                                                                     ),
-                                                                    GestureDetector(
-                                                                      onTap: (){
-
-                                                                      },
-                                                                      child: Text(
-                                                                        'Отменить',
-                                                                          style: TextStyle(
-                                                                              fontSize: 14,
-                                                                              fontFamily: 'SFProLight',
-                                                                              color: Theme.of(context).errorColor
-                                                                        ),
-                                                                      ),
-                                                                    )
                                                                   ],
                                                                 )
                                                             )

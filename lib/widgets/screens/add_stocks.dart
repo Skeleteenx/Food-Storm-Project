@@ -50,9 +50,7 @@ class _AddStocksState extends State<AddStocks> {
   @override
   Widget build(BuildContext context) {
 
-    final textFieldStyle = TextStyle(
-      height: 0.6
-    );
+
 
     final h1 = TextStyle(
       fontFamily: 'SFProSemibold',
@@ -103,7 +101,6 @@ class _AddStocksState extends State<AddStocks> {
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(16)
                       ],
-                      style: textFieldStyle,
                       controller: _nameInstitutionController,
                       decoration: InputDecoration(
                         labelText: 'Введите название',
@@ -130,35 +127,33 @@ class _AddStocksState extends State<AddStocks> {
                   SizedBox(height: 24,),
                   Text('Название акции', style: h2,),
                   SizedBox(height: 8,),
-                  SizedBox(
-                    // height: 40,
-                    child: TextField(
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(60)
-                      ],
-                      minLines: 1,
-                      maxLines: 5,
-                      style: textFieldStyle,
-                      controller: _nameStocksController,
-                      decoration: InputDecoration(
-                        labelText: 'Введите название',
-                        labelStyle: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).indicatorColor,
-                            fontFamily: 'SFProLight'
-                        ),
-                        hintStyle: TextStyle(
-                            color: Theme.of(context).indicatorColor
-                        ),
-                        fillColor: Theme.of(context).focusColor,
-                        filled: true,
-                        border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 0,
-                              style: BorderStyle.none,
-                            ),
-                            borderRadius: BorderRadius.all(Radius.circular(10))
-                        ),
+                  TextField(
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(60)
+                    ],
+                    minLines: 1,
+                    maxLines: 5,
+                    controller: _nameStocksController,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 14,vertical: 12),
+                      labelText: 'Введите название',
+                      labelStyle: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).indicatorColor,
+                          fontFamily: 'SFProLight'
+                      ),
+                      hintStyle: TextStyle(
+                          color: Theme.of(context).indicatorColor
+                      ),
+                      fillColor: Theme.of(context).focusColor,
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))
                       ),
                     ),
                   ),
@@ -167,7 +162,6 @@ class _AddStocksState extends State<AddStocks> {
                   SizedBox(height: 8,),
                   TextFormField(
 
-                    style: textFieldStyle,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(75)
                     ],
@@ -197,7 +191,7 @@ class _AddStocksState extends State<AddStocks> {
                   Text('Основное описание акции', style: h2,),
                   SizedBox(height: 8,),
                   TextField(
-                    style: textFieldStyle,
+
                     controller: _basicDescriptionController,
                     minLines: 10,
                     maxLines: 20,
@@ -226,7 +220,7 @@ class _AddStocksState extends State<AddStocks> {
                   SizedBox(
                     height: 40,
                     child: TextFormField(
-                      style: textFieldStyle,
+
                       readOnly: true,
                       maxLines: 1,
                       keyboardType: TextInputType.text,
@@ -270,7 +264,7 @@ class _AddStocksState extends State<AddStocks> {
                   SizedBox(
                     height: 40,
                     child: TextFormField(
-                      style: textFieldStyle,
+
                       readOnly: true,
                       maxLines: 1,
                       keyboardType: TextInputType.text,
@@ -371,7 +365,7 @@ class _AddStocksState extends State<AddStocks> {
                   SizedBox(
                     height: 40,
                     child: TextFormField(
-                      style: textFieldStyle,
+
                       autocorrect: false,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -412,7 +406,7 @@ class _AddStocksState extends State<AddStocks> {
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(34)
                       ],
-                      style: textFieldStyle,
+
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Введите ваш e-mail',
