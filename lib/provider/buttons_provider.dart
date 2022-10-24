@@ -26,7 +26,7 @@ class ButtonsProvider extends ChangeNotifier {
                   child: Container(
                     decoration: BoxDecoration(
                         color: Theme.of(context).focusColor,
-                        borderRadius: BorderRadius.all(Radius.circular(15))
+                        borderRadius: const BorderRadius.all(Radius.circular(15))
                     ),
                     height: 5,
                     width: 55,
@@ -49,22 +49,22 @@ class ButtonsProvider extends ChangeNotifier {
                                 fontFamily: 'SFProBold'
                             ),
                           ),
-                          SizedBox(height: 24,),
+                          const SizedBox(height: 24,),
                           Row(
-                            children: [
-                              CustomCheckBox(),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                            children: const[
+                               CustomCheckBox(),
+                               Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: Text('Тольятти', style: TextStyle(fontFamily: 'SFProLight', fontSize: 16),),
                               )
                             ],
                           ),
-                          SizedBox(height: 16,),
+                          const SizedBox(height: 16,),
                           Row(
-                            children: [
+                            children: const[
                               CustomCheckBox(),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: Text('Самара', style: TextStyle(fontFamily: 'SFProLight', fontSize: 16)),
                               )
                             ],
@@ -76,7 +76,7 @@ class ButtonsProvider extends ChangeNotifier {
                             child: Container(
                               decoration: BoxDecoration(
                                   color: Theme.of(context).backgroundColor,
-                                  borderRadius: BorderRadius.all(Radius.circular(11))
+                                  borderRadius: const BorderRadius.all(Radius.circular(11))
                               ),
                               child: TextButton(
                                 onPressed: (){},
@@ -119,7 +119,7 @@ class _IsCheckedState extends State<IsChecked> {
   Widget build(BuildContext context) {
     return Checkbox(
       checkColor: Theme.of(context).primaryColor,
-      shape: CircleBorder(),
+      shape: const CircleBorder(),
       onChanged: (bool? value){
         setState((){
           isChecked = value!;

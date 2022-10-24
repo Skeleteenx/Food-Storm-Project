@@ -47,6 +47,12 @@ class HiveModel extends HiveObject {
   @HiveField(13)
   late String? icon_res;
 
+  @HiveField(14)
+  late String? full_address;
+
+  @HiveField(15)
+  late String? short_address;
+
   HiveModel({
     this.basic_description,
     this.short_description,
@@ -61,6 +67,8 @@ class HiveModel extends HiveObject {
     this.res_rating,
     this.share_size,
     this.image,
-    this.icon_res
+    this.icon_res,
+    this.full_address,
+    this.short_address
   });
 }
