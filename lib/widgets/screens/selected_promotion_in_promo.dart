@@ -6,9 +6,7 @@ import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
 
 class SelectedPromoWidgetInPromo extends StatefulWidget {
-  SelectedPromoWidgetInPromo({
-    required this.model
-  });
+  SelectedPromoWidgetInPromo({super.key, required this.model});
   TargetPromoModel model;
 
   @override
@@ -32,7 +30,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
     final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
       body: NestedScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
             actions: [
@@ -41,6 +39,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                 child: IconButton(
                     onPressed: ()  {
                        favProvider.addStockToFav(
+                          context,
                           widget.model.basicDescription,
                           widget.model.shortDescription,
                           widget.model.email,
@@ -54,8 +53,10 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                           widget.model.shareSize,
                           widget.model.resRating,
                           widget.model.image,
-                          widget.model.iconRes
-                      );
+                          widget.model.iconRes,
+                          widget.model.fullAddress,
+                          widget.model.shortAddress
+                       );
                     },
                     icon: Icon(
                       Icons.favorite,
@@ -70,7 +71,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                          '${widget.model.image}'
+                          widget.model.image
                       )
                   )
               ),
@@ -81,17 +82,17 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: ListView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
+                  SizedBox(
                     width: 215,
                     child: Text(
                       widget.model.nameStocks,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 22,
                           fontFamily: 'SFProBold'
                       ),
@@ -101,7 +102,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     height: 32,
                     width: 72,
                     decoration: BoxDecoration(
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
                             spreadRadius: 1,
@@ -110,7 +111,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                           )
                         ],
                         color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.all(Radius.circular(13))),
+                        borderRadius: const BorderRadius.all(Radius.circular(13))),
                     child: Center(
                         child: Text(
                           '-50%',
@@ -123,7 +124,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               Text(
@@ -133,31 +134,31 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     color: Theme.of(context).highlightColor
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               SizedBox(
                 height: 30,
                 child: ListView.builder(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
                   itemBuilder: (context, index) => buildCategory(index),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 77, 0),
                 child: Text(
                   widget.model.basicDescription,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               Container(
@@ -165,7 +166,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                 height: 1,
                 width: double.maxFinite,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
               Text(
@@ -175,7 +176,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     fontSize: 14
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -183,17 +184,17 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   SizedBox(
                     height: 28,
                       width: 32,
-                      child: Image.network('${widget.model.iconRes}'
+                      child: Image.network(widget.model.iconRes
                       )
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Text(
                     widget.model.nameInstitution,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Icon(
@@ -203,24 +204,24 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   ),
                   Text(
                     widget.model.resRating,
-                    style: TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 12),
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Text(
                 widget.model.informationAboutTheRest,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'SFProLight'
                 ),
               ),
-              SizedBox(height: 24,),
+              const SizedBox(height: 24,),
               Container(
                 height: 188,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     image: DecorationImage(
                         fit: BoxFit.cover,
                         image: AssetImage('assets/images/marjan-blan-marjanblan-gHCbgGN5TCA-unsplash 1.png')
@@ -228,7 +229,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     borderRadius: BorderRadius.all(Radius.circular(22))
                 ),
               ),
-              SizedBox(height: 24,),
+              const SizedBox(height: 24,),
               Text(
                 'Адрес',
                 style: TextStyle(
@@ -237,7 +238,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   fontFamily: 'SFProLight'
               ),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               Row(
                 children: [
                   Icon(
@@ -245,17 +246,17 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     color: Theme.of(context).backgroundColor,
                     size: 24,
                   ),
-                  SizedBox(width: 12,),
+                  const SizedBox(width: 12,),
                   Text(
-                    'Тольятти, пр-т Мира, д 167 Г',
-                    style: TextStyle(
+                    widget.model.fullAddress,
+                    style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'SFProLight',
                   ),
                   )
                 ],
               ),
-              SizedBox(height: 28,),
+              const SizedBox(height: 28,),
               Text(
                 'Режим работы', style: TextStyle(
                   color: Theme.of(context).highlightColor,
@@ -263,7 +264,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   fontFamily: 'SFProLight'
               ),
               ),
-              SizedBox(height: 10,),
+              const SizedBox(height: 10,),
               Row(
                 children: [
                   Icon(
@@ -271,24 +272,24 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                     color: Theme.of(context).backgroundColor,
                     size: 24,
                   ),
-                  SizedBox(width: 12,),
+                  const SizedBox(width: 12,),
                   Text(
                     widget.model.operatingMode,
-                    style: TextStyle(
+                    style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'SFProLight',
                   ),
                   )
                 ],
               ),
-              SizedBox(height: 32,),
+              const SizedBox(height: 32,),
               Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
@@ -298,7 +299,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                         child: Image.asset('assets/images/globe-Bold.png'),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
@@ -308,7 +309,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                         child: Image.asset('assets/images/instagram icon.png'),
                       ),
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         height: 40,
                         width: 40,
                         decoration: BoxDecoration(
@@ -321,7 +322,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                       ),
                     ],
                   ),
-                  SizedBox(height: 12,),
+                  const SizedBox(height: 12,),
                   Text(
                     'Пожаловаться',
                     style: TextStyle(
@@ -330,14 +331,14 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                       fontFamily: 'SFProLight'
                   ),
                   ),
-                  SizedBox(height: 40,),
+                  const SizedBox(height: 40,),
                   SizedBox(
                     width: double.infinity,
                     height: 44,
                     child: Container(
                       decoration: BoxDecoration(
                           color: Theme.of(context).backgroundColor,
-                          borderRadius: BorderRadius.all(Radius.circular(11))
+                          borderRadius: const BorderRadius.all(Radius.circular(11))
                       ),
                       child: TextButton(
                         onPressed: (){
@@ -356,7 +357,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                       ),
                     ),
                   ),
-                  SizedBox(height: 24,)
+                  const SizedBox(height: 24,)
                 ],
               )
             ],
@@ -377,18 +378,18 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
   Widget buildCategory(int index) {
     return Container(
           height: 16,
-          margin: EdgeInsets.symmetric(horizontal: 6),
+          margin: const EdgeInsets.symmetric(horizontal: 6),
           decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
                   color: Theme.of(context).splashColor,
                   spreadRadius: 0.1,
                   blurRadius: 0.1,
-                  offset: Offset(0.1, 0.1),
+                  offset: const Offset(0.1, 0.1),
                 )
               ],
               color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.all(Radius.circular(10)
+              borderRadius: const BorderRadius.all(Radius.circular(10)
               )
           ),
           child: Padding(

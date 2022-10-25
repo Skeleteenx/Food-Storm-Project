@@ -10,9 +10,9 @@ class MaterialTabWidget extends StatelessWidget {
   MaterialTabWidget({Key? key}) : super(key: key);
 
   final List<Widget> _tabs = [
-    StocksTabWidget(),
+    const StocksTabWidget(),
     const MapsTabWidget(),
-    FavTabWidget()
+    const FavTabWidget()
   ];
 
   @override

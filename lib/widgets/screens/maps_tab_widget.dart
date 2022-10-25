@@ -66,7 +66,6 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
     var markerIdVal = requestId;
     final MarkerId markerId = MarkerId(markerIdVal.toString());
 
-    // creating a new MARKER
     final Marker marker = Marker(
       icon: mapMarker,
       markerId: markerId,
@@ -76,12 +75,11 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
       ),
       infoWindow: InfoWindow(
           title: request['name_institution'],
-          snippet: request['phone_number']
+          snippet: request['full_address']
       ),
     );
 
     setState(() {
-      // adding a new marker to map
       markers[markerId] = marker;
     });
   }
@@ -116,18 +114,19 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
     return Stack(
         children:[
           GoogleMap(
+            zoomControlsEnabled: false,
+            myLocationButtonEnabled: false,
             markers: Set<Marker>.of(markers.values),
             myLocationEnabled: true,
             mapType: MapType.terrain,
             onMapCreated: _onMapCreated,
-            // minMaxZoomPreference: MinMaxZoomPreference.unbounded,
             initialCameraPosition: const CameraPosition(
-                target: LatLng(55.874617, 48.542910),
+                target: LatLng(55.78895962153182, 49.11796498244947),
                 zoom: 15
             ),
           ),
           Positioned(
-              bottom: 49,
+              bottom: 69,
               right: 10,
               child: SizedBox(
                 height: 49,
@@ -144,7 +143,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
               )
           ),
           Positioned(
-              bottom: 113,
+              bottom: 133,
               right: 10,
               child: SizedBox(
                 height: 49,
@@ -163,7 +162,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
               )
           ),
           Positioned(
-              bottom: 177,
+              bottom: 197,
               right: 10,
               child: SizedBox(
                 height: 49,

@@ -15,9 +15,9 @@ class _CupertinoTabWidgetState extends State<CupertinoTabWidget> {
   List<String> categories = ['Все', 'Фастфуд', 'Пицца', 'Шаурма', 'Роллы', 'Бургеры'];
   int selectedIndex = 0;
   final List<Widget> _tabs = [
-    StocksTabWidget(),
+    const StocksTabWidget(),
     const MapsTabWidget(),
-    FavTabWidget()
+    const FavTabWidget()
   ];
 
   @override

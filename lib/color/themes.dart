@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 final sDarkTheme = ThemeData.dark().copyWith(
     primaryColor: Colors.black,
 
-    appBarTheme: AppBarTheme(color: Colors.black,));
+    appBarTheme: const AppBarTheme(color: Colors.black,));
 
 final sLightTheme = ThemeData.light().copyWith(
-    backgroundColor: Color.fromRGBO(60, 180, 110, 1),
+    toggleableActiveColor: Colors.red,
+    backgroundColor: const Color.fromRGBO(60, 180, 110, 1),
     primaryColor: Colors.white,
     canvasColor: Colors.black,
     cardColor: Colors.black45,
@@ -14,9 +15,9 @@ final sLightTheme = ThemeData.light().copyWith(
     dividerColor: Colors.orange,
     splashColor: Colors.black12,
     errorColor: Colors.blue,
-    shadowColor: Color.fromRGBO(18, 18, 29, 0.8),
+    shadowColor: const Color.fromRGBO(18, 18, 29, 0.8),
     hintColor: Colors.grey,
     indicatorColor: Colors.black38,
     focusColor: Colors.grey.shade300,
-    appBarTheme: AppBarTheme(color: Colors.white,)
+    appBarTheme: const AppBarTheme(color: Colors.white,)
 );

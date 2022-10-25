@@ -42,10 +42,12 @@ class SendMessageProvider extends ChangeNotifier {
         adapter: DateTimePickerAdapter(),
         textAlign: TextAlign.center,
         confirmText: 'Готово',
+        confirmTextStyle: TextStyle(color: Theme.of(context).backgroundColor),
+        cancelTextStyle: TextStyle(color: Theme.of(context).backgroundColor),
         cancelText: 'Назад',
          title: Container(
            alignment: Alignment.center,
-           child: Text(
+           child: const Text(
              'Выберите дату',
              style: TextStyle(
                fontFamily: 'SFProSemibold',
@@ -53,18 +55,6 @@ class SendMessageProvider extends ChangeNotifier {
              ),
            ),
          ),
-        //  selectedTextStyle: TextStyle(
-        //    fontSize: 15.0,
-        //  ),
-        //  confirmTextStyle: TextStyle(
-        //    fontSize: 15.0,
-        //  ),
-        // cancelTextStyle: TextStyle(
-        //   fontSize: 15
-        // ),
-        // textStyle: TextStyle(
-        //   fontSize: 15
-        // ),
         onConfirm: (Picker picker, List value) {
           DateTime? dateTime = (picker.adapter as DateTimePickerAdapter).value;
           String dateString = DateFormat.yMMMMd('ru').format(dateTime!);
@@ -86,7 +76,7 @@ class SendMessageProvider extends ChangeNotifier {
         cancelText: 'Назад',
         title: Container(
           alignment: Alignment.center,
-          child: Text(
+          child: const Text(
             'Выберите дату',
             style: TextStyle(
               fontFamily: 'SFProSemibold',
@@ -104,7 +94,6 @@ class SendMessageProvider extends ChangeNotifier {
           notifyListeners();
         }).showDialog(context);
   }
-
   Future sendEmail({
     nameInstitution,
     nameStocks,
@@ -119,9 +108,9 @@ class SendMessageProvider extends ChangeNotifier {
     shareSize,
     resRating
   }) async {
-    final serviceId = 'service_mhpjycp';
-    final templateId = 'template_gaxw47y';
-    final userId = 'ymqSAs_Rs33BGs9Vr';
+    const serviceId = 'service_mhpjycp';
+    const templateId = 'template_gaxw47y';
+    const userId = 'ymqSAs_Rs33BGs9Vr';
 
     final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
     final response = await http.post(
@@ -149,6 +138,5 @@ class SendMessageProvider extends ChangeNotifier {
           }
       })
     );
-    print(response.body);
 }
 }

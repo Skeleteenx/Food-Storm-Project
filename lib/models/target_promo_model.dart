@@ -13,6 +13,8 @@ class TargetPromoModel {
   String resRating;
   String image;
   String iconRes;
+  String fullAddress;
+  String shortAddress;
 
   TargetPromoModel({
     required this.shortDescription,
@@ -28,6 +30,8 @@ class TargetPromoModel {
     required this.shareSize,
     required this.resRating,
     required this.image,
-    required this.iconRes
+    required this.iconRes,
+    required this.fullAddress,
+    required this.shortAddress,
 });
 }

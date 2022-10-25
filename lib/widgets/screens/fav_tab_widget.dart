@@ -1,5 +1,6 @@
 import 'package:FoodStorm/widgets/screens/selected_promo_in_fav_widget.dart';
 import 'package:FoodStorm/widgets/screens/stocks_tab_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -13,7 +14,7 @@ import '../../provider/mat_bar_provider.dart';
 import '../cupertino_tab_widget.dart';
 
 class FavTabWidget extends StatefulWidget {
-  FavTabWidget({Key? key}) : super(key: key);
+  const FavTabWidget({Key? key}) : super(key: key);
 
   @override
   State<FavTabWidget> createState() => _FavTabWidgetState();
@@ -24,8 +25,9 @@ class _FavTabWidgetState extends State<FavTabWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
+    return ValueListenableBuilder<Box<HiveModel>>(
       valueListenable: hiveBox.listenable(),
+      // valueListenable: Boxes.getPostFromFavorite().listenable(),
       builder: (context, Box<HiveModel> value, _) {
         if(hiveBox.isNotEmpty){
           return StocksPresent();
@@ -38,7 +40,7 @@ class _FavTabWidgetState extends State<FavTabWidget> {
 }
 
 class StocksPresent extends StatefulWidget {
-  const StocksPresent({Key? key}) : super(key: key);
+  const StocksPresent({Key? key,}) : super(key: key);
 
   @override
   State<StocksPresent> createState() => _StocksPresentState();
@@ -75,7 +77,7 @@ class _StocksPresentState extends State<StocksPresent> {
                             .of(context)
                             .showSnackBar(
                             SnackBar(
-                              backgroundColor: Color.fromRGBO(233, 245, 238, 1),
+                              backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
                                 content: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -123,6 +125,11 @@ class _StocksPresentState extends State<StocksPresent> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final hiveList = hiveBox.values.toList().cast<HiveModel>();
     final h1 = TextStyle(
@@ -136,10 +143,10 @@ class _StocksPresentState extends State<StocksPresent> {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           children: [
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20)
@@ -173,7 +180,7 @@ class _StocksPresentState extends State<StocksPresent> {
               height: 600,
               child: GridView.builder(
                 itemCount: hiveBox.length,
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   mainAxisExtent: 189,
                   crossAxisCount: 2,
@@ -199,7 +206,9 @@ class _StocksPresentState extends State<StocksPresent> {
                                     shareSize: '${hiveList[index].share_size}',
                                     resRating: '${hiveList[index].res_rating}',
                                     image: '${hiveList[index].image}',
-                                    iconRes: '${hiveList[index].icon_res}'
+                                    iconRes: '${hiveList[index].icon_res}',
+                                    fullAddress: '${hiveList[index].full_address}',
+                                    shortAddress: '${hiveList[index].short_address}',
                                 ),
                               )
                           )
@@ -207,25 +216,154 @@ class _StocksPresentState extends State<StocksPresent> {
                       // Navigator.push(context, MaterialPageRoute(builder: (context) => SelectedPromoWidget()));
                     },
                     child: Container(
-                      margin: EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
                             color: Theme.of(context).splashColor,
                             spreadRadius: 1,
                             blurRadius: 1,
-                            offset: Offset(0, 1),
+                            offset: const Offset(0, 1),
                           )
                         ],
-                        borderRadius: BorderRadius.all(Radius.circular(11)),
+                        borderRadius: const BorderRadius.all(Radius.circular(11)),
                       ),
                       child: Stack(
                         children: [
+                          CachedNetworkImage(
+                            imageUrl: '${hiveList[index].image}',
+                            imageBuilder: (context, imageProvider) => Align(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(11),
+                                        topRight: Radius.circular(11)
+                                    ),
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    )
+                                ),
+                                height: 128,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                            child: Container(
+                                              height: 24,
+                                              width: 45,
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context).primaryColor,
+                                                  borderRadius: const BorderRadius.only(
+                                                      bottomRight: Radius.circular(8),
+                                                      topRight: Radius.circular(8)
+                                                  )
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    '${hiveList[index].share_size}',
+                                                    style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Theme.of(context).backgroundColor
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  favProvider.deleteStock(index, context);
+                                                  //     .whenComplete(
+                                                  //         () => ScaffoldMessenger
+                                                  //         .of(context)
+                                                  //         .showSnackBar(
+                                                  //         SnackBar(
+                                                  //             backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
+                                                  //             content: Row(
+                                                  //               mainAxisAlignment: MainAxisAlignment.center,
+                                                  //               children: [
+                                                  //                 Text(
+                                                  //                   'Акция удалена из избранного.',
+                                                  //                   style: TextStyle(
+                                                  //                       fontSize: 14,
+                                                  //                       fontFamily: 'SFProLight',
+                                                  //                       color: Theme.of(context).canvasColor
+                                                  //                   ),
+                                                  //                 ),
+                                                  //               ],
+                                                  //             )
+                                                  //         )
+                                                  //     )
+                                                  // );
+                                                },
+                                                icon: Icon(
+                                                  shadows: const [
+                                                    BoxShadow(
+                                                      blurRadius: 4,
+                                                    )
+                                                  ],
+                                                  CupertinoIcons.heart_fill,
+                                                  size: 25,
+                                                  color: Theme.of(context).primaryColor,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => SizedBox(
+                              height: 128,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(11),
+                                          topRight: Radius.circular(11)
+                                      ),
+                                  ),
+                                    child: const CircularProgressIndicator(
+                                      strokeWidth: 5,
+                                      backgroundColor: Color.fromRGBO(60, 180, 110, 1),
+                                      valueColor: AlwaysStoppedAnimation<
+                                          Color>(Colors.white),
+                                    )
+                                ),
+                              ),
+                            ),
+                          ),
                           Align(
                             alignment: Alignment.topCenter,
                             child: Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
+                                  borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(11),
                                       topRight: Radius.circular(11)
                                   ),
@@ -252,7 +390,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                             width: 45,
                                             decoration: BoxDecoration(
                                                 color: Theme.of(context).primaryColor,
-                                                borderRadius: BorderRadius.only(
+                                                borderRadius: const BorderRadius.only(
                                                     bottomRight: Radius.circular(8),
                                                     topRight: Radius.circular(8)
                                                 )
@@ -283,32 +421,33 @@ class _StocksPresentState extends State<StocksPresent> {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             IconButton(
-                                              onPressed: ()  {
-                                                 favProvider.deleteStock(index).whenComplete(
-                                                        () => ScaffoldMessenger
-                                                            .of(context)
-                                                            .showSnackBar(
-                                                            SnackBar(
-                                                                backgroundColor: Color.fromRGBO(233, 245, 238, 1),
-                                                                content: Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  children: [
-                                                                    Text(
-                                                                        'Удалено из избранного',
-                                                                      style: TextStyle(
-                                                                        fontSize: 14,
-                                                                        fontFamily: 'SFProLight',
-                                                                        color: Theme.of(context).canvasColor
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                )
-                                                            )
-                                                        )
-                                                );
+                                              onPressed: () {
+                                                   favProvider.deleteStock(index, context);
+                                                //        .whenComplete(
+                                                //            () => ScaffoldMessenger
+                                                //             .of(context)
+                                                //             .showSnackBar(
+                                                //             SnackBar(
+                                                //                 backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
+                                                //                 content: Row(
+                                                //                   mainAxisAlignment: MainAxisAlignment.center,
+                                                //                   children: [
+                                                //                     Text(
+                                                //                         'Удалено из избранного',
+                                                //                       style: TextStyle(
+                                                //                         fontSize: 14,
+                                                //                         fontFamily: 'SFProLight',
+                                                //                         color: Theme.of(context).canvasColor
+                                                //                       ),
+                                                //                     ),
+                                                //                   ],
+                                                //                 )
+                                                //             )
+                                                //         )
+                                                // );
                                             },
                                               icon: Icon(
-                                              shadows: [
+                                              shadows: const [
                                                 BoxShadow(
                                                   blurRadius: 4,
                                                 )
@@ -332,7 +471,7 @@ class _StocksPresentState extends State<StocksPresent> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.all(
+                                borderRadius: const BorderRadius.all(
                                     Radius.circular(11)
                                 ),
                               ),
@@ -357,7 +496,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                             children: [
                                               Text(
                                                 '${hiveList[index].name_institution}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 16,
                                                     fontFamily: 'SFProLight'),
                                               ),
@@ -381,14 +520,14 @@ class _StocksPresentState extends State<StocksPresent> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Row( //1
-                                            children: [
-                                              Icon(
+                                            children:  [
+                                              const Icon(
                                                 CupertinoIcons.location_solid,
                                                 size: 13,
                                               ),
                                               Text(
-                                                'Строителей',
-                                                style: TextStyle(
+                                                '${hiveList[index].short_address}',
+                                                style: const TextStyle(
                                                     fontSize: 10
                                                 ),
                                               ),
@@ -404,7 +543,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                               ),
                                               Text(
                                                 '${hiveList[index].res_rating}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 9
                                                 ),
                                               )
@@ -435,22 +574,26 @@ class _StocksPresentState extends State<StocksPresent> {
 class ArentStocks extends StatefulWidget {
   const ArentStocks({Key? key}) : super(key: key);
 
+
   @override
   State<ArentStocks> createState() => _ArentStocksState();
 }
 
 class _ArentStocksState extends State<ArentStocks> {
+
+
+
   @override
   Widget build(BuildContext context) {
-    final h1 = TextStyle(
+    const h1 = TextStyle(
         fontSize: 14,
         fontFamily: 'SFPro'
     );
     final tabProvider = Provider.of<MatTabBarProvider>(context);
     return Scaffold(
-      appBar: new AppBar(
+      appBar: AppBar(
         elevation: 0.0,
-        title: new Text(
+        title: Text(
           'Избранное',
           style: TextStyle(
               fontSize: 24,
@@ -465,26 +608,26 @@ class _ArentStocksState extends State<ArentStocks> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                   'Здесь отображаются избранные акции.',
                   style: h1
               ),
-              Text(
+              const Text(
                 'Нажмите на сердечко, чтобы добавить акцию',
                 style: h1,
               ),
-              Text(
+              const Text(
                 'в “Избранное”.',
                 style: h1,
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 height: 44,
                 child: Container(
                   decoration: BoxDecoration(
                       color: Theme.of(context).backgroundColor,
-                      borderRadius: BorderRadius.all(Radius.circular(11))
+                      borderRadius: const BorderRadius.all(Radius.circular(11))
                   ),
                   child: TextButton(
                     onPressed: (){
