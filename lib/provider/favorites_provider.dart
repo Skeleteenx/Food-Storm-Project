@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../hive/hive_model.dart';
+import '../models/hive/hive_model.dart';
 
 class FavoritesProvider extends ChangeNotifier{
     addStockToFav (
@@ -45,6 +45,7 @@ class FavoritesProvider extends ChangeNotifier{
           .of(context)
           .showSnackBar(
           SnackBar(
+              duration: const Duration(milliseconds: 700),
               backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,6 +70,7 @@ class FavoritesProvider extends ChangeNotifier{
           .of(context)
           .showSnackBar(
           SnackBar(
+              duration: const Duration(milliseconds: 700),
               backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -95,6 +97,7 @@ class FavoritesProvider extends ChangeNotifier{
             .of(context)
             .showSnackBar(
             SnackBar(
+                duration: const Duration(milliseconds: 700),
                 backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

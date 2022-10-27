@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
+import '../../provider/send_message_provider.dart';
 
 class SelectedPromoInFavWidget extends StatefulWidget {
   SelectedPromoInFavWidget({super.key, required this.model});
@@ -27,6 +28,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final sendEmailProvider = Provider.of<SendMessageProvider>(context);
     final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
       body: NestedScrollView(
@@ -80,7 +82,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
           )
         ],
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           child: ListView(
             physics: const BouncingScrollPhysics(),
             children: [
@@ -98,28 +100,31 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 32,
-                    width: 72,
-                    decoration: BoxDecoration(
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            spreadRadius: 1,
-                            blurRadius: 1,
-                            offset: Offset(0.5, 0.5),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Container(
+                      height: 32,
+                      width: 72,
+                      decoration: BoxDecoration(
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              spreadRadius: 0.1,
+                              blurRadius: 3,
+                              // offset: Offset(0.1, 0.1),
+                            )
+                          ],
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: const BorderRadius.all(Radius.circular(13))),
+                      child: Center(
+                          child: Text(
+                            widget.model.shareSize,
+                            style: TextStyle(
+                                color: Theme.of(context).backgroundColor,
+                                fontSize: 19
+                            ),
                           )
-                        ],
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: const BorderRadius.all(Radius.circular(13))),
-                    child: Center(
-                        child: Text(
-                          '-50%',
-                          style: TextStyle(
-                              color: Theme.of(context).backgroundColor,
-                              fontSize: 19
-                          ),
-                        )
+                      ),
                     ),
                   )
                 ],
@@ -181,12 +186,16 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               ),
               Row(
                 children: [
-                  SizedBox(
-                      height: 28,
-                      width: 32,
-                      child: Image.network(
-                          widget.model.iconRes
-                      )
+                  Container(
+                    height: 42,
+                    width: 42,
+                    decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(50)),
+                          image: DecorationImage(
+                              fit: BoxFit.fitHeight,
+                              image: NetworkImage(widget.model.iconRes)
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     width: 8,
@@ -201,11 +210,11 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                   Icon(
                     Icons.star,
                     color: Theme.of(context).dividerColor,
-                    size: 14,
+                    size: 16,
                   ),
                   Text(
                     widget.model.resRating,
-                    style: const TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 13),
                   )
                 ],
               ),
@@ -289,36 +298,24 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
+                      GestureDetector(
+                        onTap: () => sendEmailProvider.comToInt(widget.model.linkToTheInt),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          height: 40,
+                          width: 40,
+                          child: Image.asset('assets/images/Frame 130.png'),
                         ),
-                        child: Image.asset('assets/images/globe-Bold.png'),
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
-                        ),
-                        child: Image.asset('assets/images/instagram icon.png'),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
-                        ),
-                        child: Center(
-                            child: Image.asset('assets/images/Shape.png')
+                      GestureDetector(
+                        onTap: () => sendEmailProvider.comToVk(widget.model.linkToTheVk),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          height: 40,
+                          width: 40,
+                          child: Center(
+                              child: Image.asset('assets/images/Frame 128.png')
+                          ),
                         ),
                       ),
                     ],

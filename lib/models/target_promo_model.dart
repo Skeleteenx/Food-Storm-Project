@@ -15,6 +15,8 @@ class TargetPromoModel {
   String iconRes;
   String fullAddress;
   String shortAddress;
+  String linkToTheInt;
+  String linkToTheVk;
 
   TargetPromoModel({
     required this.shortDescription,
@@ -33,5 +35,7 @@ class TargetPromoModel {
     required this.iconRes,
     required this.fullAddress,
     required this.shortAddress,
+    required this.linkToTheInt,
+    required this.linkToTheVk,
 });
 }

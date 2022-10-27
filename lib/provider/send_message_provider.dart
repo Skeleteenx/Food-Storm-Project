@@ -6,6 +6,7 @@ import 'package:flutter_picker/Picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SendMessageProvider extends ChangeNotifier {
   File? image;
@@ -84,7 +85,6 @@ class SendMessageProvider extends ChangeNotifier {
             ),
           ),
         ),
-
         onConfirm: (Picker picker, List value) {
           DateTime? dateTime = (picker.adapter as DateTimePickerAdapter).value;
           String dateString = DateFormat.yMMMMd('ru').format(dateTime!);
@@ -139,4 +139,17 @@ class SendMessageProvider extends ChangeNotifier {
       })
     );
 }
+
+  void comToEmail() async {
+    String urlEmail = 'mailto:kuchum.emille@gmail.com';
+    await launch(urlEmail);
+  }
+
+  void comToInt(String urlInt) async {
+    await launch(urlInt);
+  }
+
+  void comToVk(String urlVk) async {
+    await launch(urlVk);
+  }
 }

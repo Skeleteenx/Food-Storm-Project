@@ -53,6 +53,15 @@ class HiveModel extends HiveObject {
   @HiveField(15)
   late String? short_address;
 
+  @HiveField(16)
+  late String? linkToTheInt;
+
+  @HiveField(17)
+  late String? linkToTheVk;
+
+  @HiveField(18)
+  late Map? tags;
+
   HiveModel({
     this.basic_description,
     this.short_description,
@@ -69,6 +78,9 @@ class HiveModel extends HiveObject {
     this.image,
     this.icon_res,
     this.full_address,
-    this.short_address
+    this.short_address,
+    this.linkToTheInt,
+    this.linkToTheVk,
+    this.tags
   });
 }

@@ -122,14 +122,11 @@ class _AddStocksState extends State<AddStocks> {
                       errorStyle: errorTextStyle,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      labelText: 'Введите название',
-                      labelStyle: TextStyle(
+                      hintText: 'Введите название',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
-                      ),
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).indicatorColor
                       ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
@@ -160,14 +157,11 @@ class _AddStocksState extends State<AddStocks> {
                       errorText: _validate2 ? 'Это поле не может быть пустым' : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      labelText: 'Введите название',
-                      labelStyle: TextStyle(
+                      hintText: 'Введите название',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
-                      ),
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).indicatorColor
                       ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
@@ -268,12 +262,18 @@ class _AddStocksState extends State<AddStocks> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
                       suffixIcon: const Icon(Icons.calendar_month,),
                       suffixIconColor: Theme.of(context).backgroundColor,
-                      labelText: 'Выберите дату',
-                      labelStyle: TextStyle(
+                      hintText: 'Выберите дату',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
                       ),
+                      // labelText: 'Выберите дату',
+                      // labelStyle: TextStyle(
+                      //     fontSize: 14,
+                      //     color: Theme.of(context).indicatorColor,
+                      //     fontFamily: 'SFProLight'
+                      // ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
                       border: const OutlineInputBorder(
@@ -314,13 +314,12 @@ class _AddStocksState extends State<AddStocks> {
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
                       suffixIcon: const Icon(Icons.calendar_month),
-                      labelText: 'Выберите дату',
-                      labelStyle: TextStyle(
+                      hintText: 'Выберите дату',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
                       ),
-                      // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
                       border: const OutlineInputBorder(
@@ -392,14 +391,11 @@ class _AddStocksState extends State<AddStocks> {
                       errorText: _validate7 ? 'Это поле не может быть пустым' : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      labelText: 'Введите номер телефона',
-                      labelStyle: TextStyle(
+                      hintText: 'Введите номер телефона',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
-                      ),
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).indicatorColor
                       ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
@@ -428,15 +424,11 @@ class _AddStocksState extends State<AddStocks> {
                       errorText: _validate8 ? 'Это поле не может быть пустым' : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      labelText: 'Введите ваш e-mail',
-                      labelStyle: TextStyle(
+                      hintText: 'Введите ваш e-mail',
+                      hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
-                      ),
-                      // label: Text('Поиск по акциям', style: TextStyle(fontSize: 13, color: Colors.black38),),
-                      hintStyle: TextStyle(
-                          color: Theme.of(context).indicatorColor
                       ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,

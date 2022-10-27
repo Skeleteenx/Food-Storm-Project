@@ -11,7 +11,8 @@ class MapsTabWidget extends StatefulWidget {
   State<MapsTabWidget> createState() => _MapsTabWidgetState();
 }
 
-class _MapsTabWidgetState extends State<MapsTabWidget> {
+class _MapsTabWidgetState extends State<MapsTabWidget>
+    with AutomaticKeepAliveClientMixin {
 
   Location location = Location();
 
@@ -90,10 +91,9 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return loadMap();
   }
   _animateToUser() async {
@@ -181,4 +181,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget> {
         ]
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

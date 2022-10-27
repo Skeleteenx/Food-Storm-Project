@@ -1,17 +1,13 @@
 import 'package:FoodStorm/widgets/screens/selected_promo_in_fav_widget.dart';
-import 'package:FoodStorm/widgets/screens/stocks_tab_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-
-import '../../hive/hive_model.dart';
+import '../../models/hive/hive_model.dart';
 import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
 import '../../provider/mat_bar_provider.dart';
-import '../cupertino_tab_widget.dart';
 
 class FavTabWidget extends StatefulWidget {
   const FavTabWidget({Key? key}) : super(key: key);
@@ -27,7 +23,6 @@ class _FavTabWidgetState extends State<FavTabWidget> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Box<HiveModel>>(
       valueListenable: hiveBox.listenable(),
-      // valueListenable: Boxes.getPostFromFavorite().listenable(),
       builder: (context, Box<HiveModel> value, _) {
         if(hiveBox.isNotEmpty){
           return StocksPresent();
@@ -209,6 +204,8 @@ class _StocksPresentState extends State<StocksPresent> {
                                     iconRes: '${hiveList[index].icon_res}',
                                     fullAddress: '${hiveList[index].full_address}',
                                     shortAddress: '${hiveList[index].short_address}',
+                                    linkToTheInt: '${hiveList[index].linkToTheInt}',
+                                    linkToTheVk: '${hiveList[index].linkToTheVk}',
                                 ),
                               )
                           )
@@ -221,9 +218,9 @@ class _StocksPresentState extends State<StocksPresent> {
                         boxShadow: [
                           BoxShadow(
                             color: Theme.of(context).splashColor,
-                            spreadRadius: 1,
-                            blurRadius: 1,
-                            offset: const Offset(0, 1),
+                            spreadRadius: 0.1,
+                            blurRadius: 4,
+                            offset: const Offset(0.1, 0.1),
                           )
                         ],
                         borderRadius: const BorderRadius.all(Radius.circular(11)),
@@ -286,50 +283,25 @@ class _StocksPresentState extends State<StocksPresent> {
                                     Column(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  favProvider.deleteStock(index, context);
-                                                  //     .whenComplete(
-                                                  //         () => ScaffoldMessenger
-                                                  //         .of(context)
-                                                  //         .showSnackBar(
-                                                  //         SnackBar(
-                                                  //             backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
-                                                  //             content: Row(
-                                                  //               mainAxisAlignment: MainAxisAlignment.center,
-                                                  //               children: [
-                                                  //                 Text(
-                                                  //                   'Акция удалена из избранного.',
-                                                  //                   style: TextStyle(
-                                                  //                       fontSize: 14,
-                                                  //                       fontFamily: 'SFProLight',
-                                                  //                       color: Theme.of(context).canvasColor
-                                                  //                   ),
-                                                  //                 ),
-                                                  //               ],
-                                                  //             )
-                                                  //         )
-                                                  //     )
-                                                  // );
-                                                },
-                                                icon: Icon(
-                                                  shadows: const [
-                                                    BoxShadow(
-                                                      blurRadius: 4,
-                                                    )
-                                                  ],
-                                                  CupertinoIcons.heart_fill,
-                                                  size: 25,
-                                                  color: Theme.of(context).primaryColor,
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
+                                                favProvider.deleteStock(index, context);
+                                              },
+                                              icon: Icon(
+                                                shadows: const [
+                                                  BoxShadow(
+                                                    blurRadius: 4,
+                                                  )
+                                                ],
+                                                CupertinoIcons.heart_fill,
+                                                size: 25,
+                                                color: Theme.of(context).primaryColor,
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ],
                                     )
@@ -352,8 +324,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                     child: const CircularProgressIndicator(
                                       strokeWidth: 5,
                                       backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-                                      valueColor: AlwaysStoppedAnimation<
-                                          Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                     )
                                 ),
                               ),
@@ -389,6 +360,14 @@ class _StocksPresentState extends State<StocksPresent> {
                                             height: 24,
                                             width: 45,
                                             decoration: BoxDecoration(
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black12,
+                                                    spreadRadius: 5,
+                                                    blurRadius: 7,
+                                                    offset: Offset(5, 5),
+                                                  )
+                                                ],
                                                 color: Theme.of(context).primaryColor,
                                                 borderRadius: const BorderRadius.only(
                                                     bottomRight: Radius.circular(8),
@@ -423,33 +402,11 @@ class _StocksPresentState extends State<StocksPresent> {
                                             IconButton(
                                               onPressed: () {
                                                    favProvider.deleteStock(index, context);
-                                                //        .whenComplete(
-                                                //            () => ScaffoldMessenger
-                                                //             .of(context)
-                                                //             .showSnackBar(
-                                                //             SnackBar(
-                                                //                 backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
-                                                //                 content: Row(
-                                                //                   mainAxisAlignment: MainAxisAlignment.center,
-                                                //                   children: [
-                                                //                     Text(
-                                                //                         'Удалено из избранного',
-                                                //                       style: TextStyle(
-                                                //                         fontSize: 14,
-                                                //                         fontFamily: 'SFProLight',
-                                                //                         color: Theme.of(context).canvasColor
-                                                //                       ),
-                                                //                     ),
-                                                //                   ],
-                                                //                 )
-                                                //             )
-                                                //         )
-                                                // );
                                             },
                                               icon: Icon(
                                               shadows: const [
                                                 BoxShadow(
-                                                  blurRadius: 4,
+                                                  blurRadius: 7,
                                                 )
                                               ],
                                               CupertinoIcons.heart_fill,
@@ -471,26 +428,44 @@ class _StocksPresentState extends State<StocksPresent> {
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).primaryColor,
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(11)
-                                ),
+                                borderRadius: const BorderRadius.all(Radius.circular(15)),
                               ),
-                              height: 65,
+                              height: 75,
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(6, 6, 12, 0),
+                                padding: const EdgeInsets.fromLTRB(6, 6, 6, 6),
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
-                                        SizedBox(
-                                            height: 22.75,
-                                            width: 26,
-                                            child: Image.network(
-                                                '${hiveList[index].icon_res}'
-                                            )
+                                        CachedNetworkImage(
+                                          imageUrl: '${hiveList[index].icon_res}',
+                                          imageBuilder: (context, imageProvider) => Container(
+                                            height: 28,
+                                            width: 28,
+                                            decoration: BoxDecoration(
+                                                borderRadius: const BorderRadius.all(Radius.circular(50)),
+                                                image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.fitHeight
+                                                )
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                // height: 22.75,
+                                                height: 26,
+                                                width: 26,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                                                    color: Theme.of(context).backgroundColor
+                                                ),
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(),
                                         ),
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 1),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -522,13 +497,13 @@ class _StocksPresentState extends State<StocksPresent> {
                                           Row( //1
                                             children:  [
                                               const Icon(
-                                                CupertinoIcons.location_solid,
+                                                Icons.location_on_outlined,
                                                 size: 13,
                                               ),
                                               Text(
                                                 '${hiveList[index].short_address}',
                                                 style: const TextStyle(
-                                                    fontSize: 10
+                                                    fontSize: 12
                                                 ),
                                               ),
                                             ],
@@ -589,63 +564,133 @@ class _ArentStocksState extends State<ArentStocks> {
         fontSize: 14,
         fontFamily: 'SFPro'
     );
+    final h2 = TextStyle(
+        fontFamily: 'SFProSemibold',
+        fontSize: 24,
+        color: Theme.of(context).canvasColor
+    );
     final tabProvider = Provider.of<MatTabBarProvider>(context);
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        title: Text(
-          'Избранное',
-          style: TextStyle(
-              fontSize: 24,
-              fontFamily: 'SFProSemibold',
-              color: Theme.of(context).canvasColor,
-          ),
-        ),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                  'Здесь отображаются избранные акции.',
-                  style: h1
-              ),
-              const Text(
-                'Нажмите на сердечко, чтобы добавить акцию',
-                style: h1,
-              ),
-              const Text(
-                'в “Избранное”.',
-                style: h1,
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).backgroundColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(11))
+      // appBar: AppBar(
+      //   elevation: 0.0,
+      //   title: Text(
+      //     'Избранное',
+      //     style: TextStyle(
+      //         fontSize: 24,
+      //         fontFamily: 'SFProSemibold',
+      //         color: Theme.of(context).canvasColor,
+      //     ),
+      //   ),
+      // ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+           const SizedBox(height: 40,),
+            Column(
+              children: [
+                Container(
+                  // margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20)
+                      )
                   ),
-                  child: TextButton(
-                    onPressed: (){
-                      tabProvider.onItemTapped(0);
-                    },
-                    child: Text(
-                      'Перейти к акциям',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontFamily: 'SFPro',
-                          fontSize: 14
+                  width: double.maxFinite,
+                  height: 40,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Избранное',
+                        style: h2,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 230,),
+                const Text(
+                    'Здесь отображаются избранные акции.',
+                    style: h1
+                ),
+                const Text(
+                  'Нажмите на сердечко, чтобы добавить акцию',
+                  style: h1,
+                ),
+                const Text(
+                  'в “Избранное”.',
+                  style: h1,
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).backgroundColor,
+                        borderRadius: const BorderRadius.all(Radius.circular(11))
+                    ),
+                    child: TextButton(
+                      onPressed: (){
+                        tabProvider.onItemTapped(0);
+                      },
+                      child: Text(
+                        'Перейти к акциям',
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontFamily: 'SFPro',
+                            fontSize: 14
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            // const Text(
+            //     'Здесь отображаются избранные акции.',
+            //     style: h1
+            // ),
+            // const Text(
+            //   'Нажмите на сердечко, чтобы добавить акцию',
+            //   style: h1,
+            // ),
+            // const Text(
+            //   'в “Избранное”.',
+            //   style: h1,
+            // ),
+            // const SizedBox(height: 32),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 44,
+            //   child: Container(
+            //     decoration: BoxDecoration(
+            //         color: Theme.of(context).backgroundColor,
+            //         borderRadius: const BorderRadius.all(Radius.circular(11))
+            //     ),
+            //     child: TextButton(
+            //       onPressed: (){
+            //         tabProvider.onItemTapped(0);
+            //       },
+            //       child: Text(
+            //         'Перейти к акциям',
+            //         style: TextStyle(
+            //             color: Theme.of(context).primaryColor,
+            //             fontFamily: 'SFPro',
+            //             fontSize: 14
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
         ),
       ),
     );

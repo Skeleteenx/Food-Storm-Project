@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
+import '../../provider/send_message_provider.dart';
 
 class SelectedPromoWidgetInPromo extends StatefulWidget {
   SelectedPromoWidgetInPromo({super.key, required this.model});
@@ -25,9 +26,12 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
 
   int selectedIndex = 0;
 
+  void _ ()async{}
+
   @override
   Widget build(BuildContext context) {
     final favProvider = Provider.of<FavoritesProvider>(context);
+    final sendEmailProvider = Provider.of<SendMessageProvider>(context);
     return Scaffold(
       body: NestedScrollView(
         physics: const BouncingScrollPhysics(),
@@ -181,11 +185,16 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
               ),
               Row(
                 children: [
-                  SizedBox(
-                    height: 28,
-                      width: 32,
-                      child: Image.network(widget.model.iconRes
-                      )
+                  Container(
+                    height: 42,
+                    width: 42,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                      image: DecorationImage(
+                          fit: BoxFit.fitHeight,
+                          image: NetworkImage(widget.model.iconRes)
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     width: 8,
@@ -200,11 +209,11 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   Icon(
                     Icons.star,
                     color: Theme.of(context).dividerColor,
-                    size: 14,
+                    size: 16,
                   ),
                   Text(
                     widget.model.resRating,
-                    style: const TextStyle(fontSize: 12),
+                    style: const TextStyle(fontSize: 13),
                   )
                 ],
               ),
@@ -236,7 +245,7 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   color: Theme.of(context).highlightColor,
                   fontSize: 14,
                   fontFamily: 'SFProLight'
-              ),
+                ),
               ),
               const SizedBox(height: 10,),
               Row(
@@ -288,48 +297,45 @@ class _SelectedPromoWidgetInPromoState extends State<SelectedPromoWidgetInPromo>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
+                      GestureDetector(
+                        onTap: () => sendEmailProvider.comToInt(widget.model.linkToTheInt),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          height: 40,
+                          width: 40,
+                          child: Image.asset('assets/images/Frame 130.png'),
                         ),
-                        child: Image.asset('assets/images/globe-Bold.png'),
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
-                        ),
-                        child: Image.asset('assets/images/instagram icon.png'),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            color: Theme.of(context).backgroundColor,
-                            borderRadius: BorderRadius.circular(100)
-                        ),
-                        child: Center(
-                            child: Image.asset('assets/images/Shape.png')
+                      // Container(
+                      //   margin: const EdgeInsets.symmetric(horizontal: 4),
+                      //   height: 40,
+                      //   width: 40,
+                      //   child: Image.asset('assets/images/Frame 129.png'),
+                      // ),
+                      GestureDetector(
+                        onTap: () => sendEmailProvider.comToVk(widget.model.linkToTheVk),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          height: 40,
+                          width: 40,
+                          child: Center(
+                              child: Image.asset('assets/images/Frame 128.png')
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12,),
-                  Text(
-                    'Пожаловаться',
-                    style: TextStyle(
-                      color: Theme.of(context).highlightColor,
-                      fontSize: 16,
-                      fontFamily: 'SFProLight'
-                  ),
+                  GestureDetector(
+                    onTap: () => sendEmailProvider.comToEmail(),
+                    child: Text(
+                      'Пожаловаться',
+                      style: TextStyle(
+                        color: Theme.of(context).highlightColor,
+                        fontSize: 16,
+                        fontFamily: 'SFProLight'
+                    ),
+                    ),
                   ),
                   const SizedBox(height: 40,),
                   SizedBox(
