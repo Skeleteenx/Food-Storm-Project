@@ -16,7 +16,7 @@ class _CupertinoTabWidgetState extends State<CupertinoTabWidget> {
   int selectedIndex = 0;
   final List<Widget> _tabs = [
     const StocksTabWidget(),
-    const MapsTabWidget(),
+     MapsTabWidget(),
     const FavTabWidget()
   ];
 

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../generated/l10n.dart';
+
 class AddImageInStorageProvider extends ChangeNotifier{
   File? image;
   String? imageUrl;
@@ -49,7 +51,7 @@ class AddImageInStorageProvider extends ChangeNotifier{
   showModalSheet(BuildContext context) {
     return showModalBottomSheet(
       clipBehavior: Clip.hardEdge,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(20.0),
@@ -67,7 +69,7 @@ class AddImageInStorageProvider extends ChangeNotifier{
                 height: 25.0,
               ),
               Text(
-                'Выберите способ',
+                S.of(context).choose_method_text,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                   fontFamily: 'SFProSemibold',
@@ -95,11 +97,11 @@ class AddImageInStorageProvider extends ChangeNotifier{
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 13.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 13.0),
                           child: Text(
-                            'Из галерии',
-                            style: TextStyle(
+                            S.of(context).from_gallery_text,
+                            style: const TextStyle(
                               fontFamily: 'SFProSemibold',
                             ),
                           ),
@@ -122,11 +124,11 @@ class AddImageInStorageProvider extends ChangeNotifier{
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 13.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 13.0),
                           child: Text(
-                            'Камера',
-                            style: TextStyle(
+                            S.of(context).camera_text,
+                            style: const TextStyle(
                               fontFamily: 'SFProSemibold',
                             ),
                           ),

@@ -4,6 +4,7 @@ import 'package:FoodStorm/widgets/screens/stocks_tab_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../generated/l10n.dart';
 import '../provider/mat_bar_provider.dart';
 
 class MaterialTabWidget extends StatelessWidget {
@@ -31,24 +32,24 @@ class MaterialTabWidget extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         currentIndex: tabProvider.selectedIndex,
         onTap: tabProvider.onItemTapped,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(
+              icon: const Icon(
                 Icons.percent_sharp,
               ),
-              label: 'Акции'
+              label: S.of(context).stocks_tab_text
           ),
           BottomNavigationBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.location_on_outlined,
             ),
-            label: 'Карта',
+            label: S.of(context).map_tab_text,
           ),
           BottomNavigationBarItem(
-              icon: Icon(
+              icon: const Icon(
                 CupertinoIcons.heart,
               ),
-              label: 'Избранное'
+              label: S.of(context).fav_tab_text
           ),
         ],
       ),

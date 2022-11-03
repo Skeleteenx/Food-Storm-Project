@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:FoodStorm/provider/add_image_in_storage_provider.dart';
+import 'package:FoodStorm/provider/change_category_provider.dart';
+import 'package:FoodStorm/provider/stocks_template_provider.dart';
 import 'package:FoodStorm/widgets/screens/splash_screen.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -27,6 +29,12 @@ class FoodStormApp extends StatelessWidget {
       initial: AdaptiveThemeMode.light,
       builder: (light, dark) => MultiProvider(
         providers: [
+          ChangeNotifierProvider<StockTemplateProvider>(
+            create: (_) => StockTemplateProvider(),
+          ),
+          ChangeNotifierProvider<ChangeCategoryProvider>(
+            create: (_) => ChangeCategoryProvider(),
+          ),
           ChangeNotifierProvider<MatTabBarProvider>(
             create: (_) => MatTabBarProvider(),
           ),

@@ -1,11 +1,7 @@
-
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-import 'package:flutter_picker/Picker.dart';
 import 'package:provider/provider.dart';
 import '../../generated/l10n.dart';
 import '../../provider/add_image_in_storage_provider.dart';
@@ -37,11 +33,11 @@ class _AddStocksState extends State<AddStocks> {
   final TextEditingController _shortDescriptionController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  final TextEditingController _informationAboutTheRestController = TextEditingController();
 
   @override
   void initState() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
+    // AddImageInStorageProvider().image = null;
     super.initState();
   }
 
@@ -54,7 +50,7 @@ class _AddStocksState extends State<AddStocks> {
     _basicDescriptionController.dispose();
     _emailController.dispose();
     _phoneNumberController.dispose();
-    _informationAboutTheRestController.dispose();
+    AddImageInStorageProvider().dispose();
     super.dispose();
   }
 
@@ -98,17 +94,17 @@ class _AddStocksState extends State<AddStocks> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      S.of(context).adding_a_promotion,
+                      S.of(context).add_stock_screen_text,
                       style: h1
                   ),
                   const SizedBox(height: 16,),
                   Text(
-                      'Если вы менеджер ресторана и хотите добавить акцию, то пожалуйста заполните и отправьте форму ниже. Это бесплатно.',
+                      S.of(context).info_add_stock_screen_text,
                     style: h3
                   ),
                   const SizedBox(height: 32,),
                   Text(
-                    'Название заведения',
+                    S.of(context).name_inst_text,
                     style: h2
                   ),
                   const SizedBox(height: 8,),
@@ -118,11 +114,48 @@ class _AddStocksState extends State<AddStocks> {
                     ],
                     controller: _nameInstitutionController,
                     decoration: InputDecoration(
-                      errorText: _validate1 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate1 ? S.of(context).empty_field_text : null,
                       errorStyle: errorTextStyle,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите название',
+                      hintText: S.of(context).enter_a_name_text,
+                      hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).indicatorColor,
+                          fontFamily: 'SFProLight'
+                      ),
+                      fillColor: Theme.of(context).focusColor,
+                      filled: true,
+                      border: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 0,
+                            style: BorderStyle.none,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                    ),
+                    textInputAction: TextInputAction.next,
+                  ),
+                  const SizedBox(height: 24,),
+                  Text(
+                    S.of(context).name_stock_text,
+                    style: h2
+                  ),
+                  const SizedBox(height: 8,),
+                  TextField(
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(60)
+                    ],
+                    minLines: 1,
+                    maxLines: 5,
+                    controller: _nameStocksController,
+                    decoration: InputDecoration(
+                      errorStyle: errorTextStyle,
+                      errorText: _validate2 ? S.of(context).empty_field_text : null,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
+                      hintText: S.of(context).enter_a_name_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -141,43 +174,12 @@ class _AddStocksState extends State<AddStocks> {
                   ),
                   const SizedBox(height: 24,),
                   Text(
-                    'Название акции',
-                    style: h2
+                    S.of(context).short_description_stock_text,
+                    style: h2,
                   ),
-                  const SizedBox(height: 8,),
-                  TextField(
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(60)
-                    ],
-                    minLines: 1,
-                    maxLines: 5,
-                    controller: _nameStocksController,
-                    decoration: InputDecoration(
-                      errorStyle: errorTextStyle,
-                      errorText: _validate2 ? 'Это поле не может быть пустым' : null,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите название',
-                      hintStyle: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context).indicatorColor,
-                          fontFamily: 'SFProLight'
-                      ),
-                      fillColor: Theme.of(context).focusColor,
-                      filled: true,
-                      border: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            width: 0,
-                            style: BorderStyle.none,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(10))
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24,),
-                  Text('Краткое описание акции', style: h2,),
                   const SizedBox(height: 8,),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(75)
                     ],
@@ -186,10 +188,10 @@ class _AddStocksState extends State<AddStocks> {
                     maxLines: 2,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate3 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate3 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите описание',
+                      hintText: S.of(context).enter_a_desc_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -208,18 +210,22 @@ class _AddStocksState extends State<AddStocks> {
                     ),
                   ),
                   const SizedBox(height: 24,),
-                  Text('Основное описание акции', style: h2,),
+                  Text(
+                    S.of(context).main_description_stock_text,
+                    style: h2
+                  ),
                   const SizedBox(height: 8,),
                   TextField(
+                    textInputAction: TextInputAction.next,
                     controller: _basicDescriptionController,
                     minLines: 10,
                     maxLines: 20,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate4 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate4 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите описание',
+                      hintText: S.of(context).enter_a_desc_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -238,17 +244,16 @@ class _AddStocksState extends State<AddStocks> {
                     ),
                   ),
                   const SizedBox(height: 24,),
-                  Text('Дата начала', style: h2),
+                  Text(S.of(context).date_start_text, style: h2),
                   const SizedBox(height: 8,),
                   TextFormField(
                     readOnly: true,
                     maxLines: 1,
                     keyboardType: TextInputType.text,
-                    onSaved: (input){},
                     obscureText: false,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.next,
                     validator: (input) =>
-                    input!.length < 3 ? S.of(context).add_stock : null,
+                    input!.length < 3 ? S.of(context).date_start_text : null,
                     onTap: () => messProvider.showPickerDateStart(context).then((context){
                       _deadControllerStart = TextEditingController(
                         text: messProvider.getDeadlineStart,
@@ -257,23 +262,17 @@ class _AddStocksState extends State<AddStocks> {
                     controller: _deadControllerStart,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate5 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate5 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
                       suffixIcon: const Icon(Icons.calendar_month,),
                       suffixIconColor: Theme.of(context).backgroundColor,
-                      hintText: 'Выберите дату',
+                      hintText: S.of(context).choose_date_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
                           fontFamily: 'SFProLight'
                       ),
-                      // labelText: 'Выберите дату',
-                      // labelStyle: TextStyle(
-                      //     fontSize: 14,
-                      //     color: Theme.of(context).indicatorColor,
-                      //     fontFamily: 'SFProLight'
-                      // ),
                       fillColor: Theme.of(context).focusColor,
                       filled: true,
                       border: const OutlineInputBorder(
@@ -287,7 +286,7 @@ class _AddStocksState extends State<AddStocks> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                      'Дата окончания',
+                      S.of(context).date_end_text,
                       style: h2
                   ),
                   const SizedBox(height: 8,),
@@ -295,11 +294,10 @@ class _AddStocksState extends State<AddStocks> {
                     readOnly: true,
                     maxLines: 1,
                     keyboardType: TextInputType.text,
-                    onSaved: (inputTwo){},
                     obscureText: false,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.next,
                     validator: (inputTwo) =>
-                    inputTwo!.length < 3 ? S.of(context).cup_bar_map : null,
+                    inputTwo!.length < 3 ? S.of(context).date_end_text : null,
                     onTap: () => messProvider
                         .showPickerDateEnd(context)
                         .then((context){
@@ -310,11 +308,11 @@ class _AddStocksState extends State<AddStocks> {
                     controller: _deadControllerEnd,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate6 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate6 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
                       suffixIcon: const Icon(Icons.calendar_month),
-                      hintText: 'Выберите дату',
+                      hintText: S.of(context).choose_date_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -333,14 +331,13 @@ class _AddStocksState extends State<AddStocks> {
                   ),
                   const SizedBox(height: 24,),
                   Text(
-                      'Фото',
+                      S.of(context).photo_text,
                       style: h2
                   ),
                   const SizedBox(height: 8,),
                   GestureDetector(
-                    onTap: () async {
-                      await addImage.showModalSheet(context);
-                      // messProvider.pickingImage();
+                    onTap: () {
+                      addImage.showModalSheet(context);
                     },
                     child: SizedBox(
                       height: 164,
@@ -354,12 +351,12 @@ class _AddStocksState extends State<AddStocks> {
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
+                          children: [
+                            const Icon(
                                 CupertinoIcons.photo_camera,
                                 size: 32
                             ),
-                            Text('Добавить')
+                            Text(S.of(context).add_text)
                           ],
                         ),
                       ) : ClipRRect(
@@ -375,11 +372,12 @@ class _AddStocksState extends State<AddStocks> {
                   ),
                   const SizedBox(height: 40,),
                   Text(
-                      'Телефон менеджера',
+                      S.of(context).telephone_manager_text,
                       style: h2
                   ),
                   const SizedBox(height: 8,),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     autocorrect: false,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -388,10 +386,10 @@ class _AddStocksState extends State<AddStocks> {
                     controller: _phoneNumberController,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate7 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate7 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите номер телефона',
+                      hintText: S.of(context).enter_phone_number_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -410,21 +408,22 @@ class _AddStocksState extends State<AddStocks> {
                   ),
                   const SizedBox(height: 24,),
                   Text(
-                      'E-mail',
+                      S.of(context).email_text,
                       style: h2
                   ),
                   const SizedBox(height: 8,),
                   TextField(
+                    textInputAction: TextInputAction.done,
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(34)
                     ],
                     controller: _emailController,
                     decoration: InputDecoration(
                       errorStyle: errorTextStyle,
-                      errorText: _validate8 ? 'Это поле не может быть пустым' : null,
+                      errorText: _validate8 ? S.of(context).empty_field_text : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14,vertical: 12),
-                      hintText: 'Введите ваш e-mail',
+                      hintText: S.of(context).enter_email_text,
                       hintStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).indicatorColor,
@@ -451,7 +450,39 @@ class _AddStocksState extends State<AddStocks> {
                           borderRadius: const BorderRadius.all(Radius.circular(11))
                       ),
                       child: TextButton(
-                        onPressed: () async {
+                        onPressed: () {
+                          if(
+                          _nameInstitutionController.text.isEmpty
+                              || _nameStocksController.text.isEmpty
+                              || _basicDescriptionController.text.isEmpty
+                              || _shortDescriptionController.text.isEmpty
+                              || _deadControllerEnd.text.isEmpty
+                              || _deadControllerStart.text.isEmpty
+                              || _emailController.text.isEmpty
+                              || _phoneNumberController.text.isEmpty
+                          ) {
+                            return setState(() {
+                              _nameInstitutionController.text.isEmpty ? _validate1 = true : _validate1 = false;
+                              _nameStocksController.text.isEmpty ? _validate2 = true : _validate2 = false;
+                              _basicDescriptionController.text.isEmpty ? _validate3 = true : _validate3 = false;
+                              _shortDescriptionController.text.isEmpty ? _validate4 = true : _validate4 = false;
+                              _deadControllerStart.text.isEmpty ? _validate5 = true : _validate5 = false;
+                              _deadControllerEnd.text.isEmpty ? _validate6 = true : _validate6 = false;
+                              _phoneNumberController.text.isEmpty ? _validate7 = true : _validate7 = false;
+                              _emailController.text.isEmpty ? _validate8 = true : _validate8 = false;
+                            });
+                          } else {
+                            addImage.addImageInStorage();
+                             setState(() {
+                              _nameInstitutionController.text.isEmpty ? _validate1 = true : _validate1 = false;
+                              _nameStocksController.text.isEmpty ? _validate2 = true : _validate2 = false;
+                              _basicDescriptionController.text.isEmpty ? _validate3 = true : _validate3 = false;
+                              _shortDescriptionController.text.isEmpty ? _validate4 = true : _validate4 = false;
+                              _deadControllerStart.text.isEmpty ? _validate5 = true : _validate5 = false;
+                              _deadControllerEnd.text.isEmpty ? _validate6 = true : _validate6 = false;
+                              _phoneNumberController.text.isEmpty ? _validate7 = true : _validate7 = false;
+                              _emailController.text.isEmpty ? _validate8 = true : _validate8 = false;
+                            });
                             messProvider.sendEmail(
                               nameInstitution: _nameInstitutionController.text.trim(),
                               nameStocks: _nameStocksController.text.trim(),
@@ -461,21 +492,12 @@ class _AddStocksState extends State<AddStocks> {
                               endDate: _deadControllerEnd.text.trim(),
                               email: _emailController.text.trim(),
                               phoneNumber: _phoneNumberController.text.trim(),
+                              context: context
                             );
-                          setState(() {
-                            _nameInstitutionController.text.isEmpty ? _validate1 = true : _validate1 = false;
-                            _nameStocksController.text.isEmpty ? _validate2 = true : _validate2 = false;
-                            _basicDescriptionController.text.isEmpty ? _validate3 = true : _validate3 = false;
-                            _shortDescriptionController.text.isEmpty ? _validate4 = true : _validate4 = false;
-                            _deadControllerStart.text.isEmpty ? _validate5 = true : _validate5 = false;
-                            _deadControllerEnd.text.isEmpty ? _validate6 = true : _validate6 = false;
-                            _emailController.text.isEmpty ? _validate7 = true : _validate7 = false;
-                            _phoneNumberController.text.isEmpty ? _validate8 = true : _validate8 = false;
-                          });
-                          await addImage.addImageInStorage();
+                          }
                         },
                         child: Text(
-                          'Отправить',
+                          S.of(context).to_send_text,
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               fontFamily: 'SFPro',
@@ -495,7 +517,9 @@ class _AddStocksState extends State<AddStocks> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 61, horizontal: 27),
           child: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: const Icon(
                 Icons.arrow_back_ios,
                 size: 20,
@@ -506,11 +530,4 @@ class _AddStocksState extends State<AddStocks> {
     );
   }
 
-  showPickerDate(BuildContext context) {
-    Picker(
-        hideHeader: true,
-        adapter: DateTimePickerAdapter(),
-        title: const Text("Выберите дату"),
-        onConfirm: (Picker picker, List value){}).showDialog(context);
-  }
 }

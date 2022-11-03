@@ -1,14 +1,13 @@
-import 'package:FoodStorm/widgets/screens/selected_promotion_in_promo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../models/target_promo_model.dart';
+import '../../generated/l10n.dart';
+import '../../provider/add_image_in_storage_provider.dart';
 import '../../provider/buttons_provider.dart';
-import '../../provider/favorites_provider.dart';
+import '../../provider/change_category_provider.dart';
+import '../../provider/stocks_template_provider.dart';
 import 'add_stocks.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class StocksTabWidget extends StatefulWidget {
   const StocksTabWidget({Key? key}) : super(key: key);
@@ -19,17 +18,20 @@ class StocksTabWidget extends StatefulWidget {
 
 class _StocksTabWidgetState extends State<StocksTabWidget>
     with AutomaticKeepAliveClientMixin {
-  List<String> categories = ['Все', 'Фастфуд', 'Пицца', 'Шаурма', 'Роллы', 'Бургеры'];
+  List<String> categories = ['Все', 'Фастфуд', 'Бургеры', 'Пицца', 'Роллы', 'Шаурма', 'Комбо'];
   String name = '';
   int selectedIndex = 0;
-  int pressedAttentionIndex = -1;
-  final ref = FirebaseFirestore.instance.collection('stocks');
+  final CollectionReference stocks = FirebaseFirestore.instance.collection('stocks');
+  final CollectionReference stocksSam = FirebaseFirestore.instance.collection('samara');
+  String filters = 'Все';
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final favImageProvider = Provider.of<AddImageInStorageProvider>(context);
+    final changeProvider = Provider.of<ChangeCategoryProvider>(context);
     final providerButt = Provider.of<ButtonsProvider>(context);
-    final favProvider = Provider.of<FavoritesProvider>(context);
+    final templateProvider = Provider.of<StockTemplateProvider>(context);
     return Scaffold(
             appBar: AppBar(
                 shadowColor: Theme.of(context).primaryColor,
@@ -46,27 +48,30 @@ class _StocksTabWidgetState extends State<StocksTabWidget>
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  providerButt.showModalSheet(context);
+                                    providerButt.showModalSheet(context);
                                 },
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Text(
-                                      'Тольятти',
-                                      style: TextStyle(
+                                      providerButt.selectedCity,
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           fontFamily: 'SFPro'
                                       ),
                                     ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 11,
+                                    const SizedBox(
+                                      height: 7,
+                                      child: Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 10,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               SizedBox(
-                                height: 36,
+                                height: 38,
                                 child: Container(
                                   decoration: BoxDecoration(
                                       color: Theme.of(context).backgroundColor,
@@ -81,13 +86,15 @@ class _StocksTabWidgetState extends State<StocksTabWidget>
                                                   builder: (context) =>
                                                       const AddStocks()
                                               )
-                                          ),
+                                          ).then((context) => {
+                                            setState((){
+                                              favImageProvider.image = null;
+                                            })
+                                          }),
                                       child: Text(
-                                        'Добавить акцию',
+                                        S.of(context).add_stock_text,
                                         style: TextStyle(
-                                            color: Theme
-                                                .of(context)
-                                                .primaryColor,
+                                            color: Theme.of(context).primaryColor,
                                             fontFamily: 'SFPro',
                                             fontSize: 13
                                         ),
@@ -109,13 +116,11 @@ class _StocksTabWidgetState extends State<StocksTabWidget>
                                });
                              },
                              decoration: InputDecoration(
-
                                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                               hintText: 'Поиск по акциям',
+                               hintText: S.of(context).search_stocks_text,
                                prefixIcon: const Icon(
                                    Icons.search,
                                    size: 26,
-                                   // color: Color.fromRGBO(60, 180, 110, 1),
                                ),
                                hintStyle: TextStyle(
                                    fontSize: 14,
@@ -141,1595 +146,99 @@ class _StocksTabWidgetState extends State<StocksTabWidget>
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: categories.length,
-                            itemBuilder: (context, index) =>
-                                buildCategory(index),
+                            itemBuilder: (context, index) => changeProvider.buildCategory(
+                                index,
+                                selectedIndex,
+                                    () {
+                                      setState(() {
+                                        selectedIndex = index;
+                                      });
+                                    },
+                                context,
+                                categories
+                            ),
+                            // itemBuilder: (context, index) => buildCategory(index)
                           ),
                         ),
                       ]),
                 )
             ),
             body: StreamBuilder<QuerySnapshot>(
-                stream: ref.snapshots(),
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshots) {
-                  return (snapshots.hasData)
-                      ? ListView.builder(
-                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                      itemCount: snapshots.data!.docs.length,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
-                        var temp = snapshots.data!.docs[index];
-                        if(name.isEmpty) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (_) =>
-                                        SelectedPromoWidgetInPromo(
-                                          model: TargetPromoModel(
-                                              shortDescription: temp['short_description'],
-                                              email: temp['email'],
-                                              endDate: temp['end_date'],
-                                              basicDescription: temp['basic_description'],
-                                              nameStocks: temp['name_stocks'],
-                                              nameInstitution: temp['name_institution'],
-                                              startDate: temp['start_date'],
-                                              phoneNumber: temp['phone_number'],
-                                              informationAboutTheRest: temp['information_about_the_rest'],
-                                              operatingMode: temp['operating_mode'],
-                                              shareSize: temp['share_size'],
-                                              resRating: temp['res_rating'],
-                                              image: temp['image'],
-                                              iconRes: temp['icon_res'],
-                                              fullAddress: temp['full_address'],
-                                              shortAddress: temp['short_address'],
-                                              linkToTheInt: temp['link_to_the_int'],
-                                              linkToTheVk: temp['link_to_the_vk'],
-                                          ),
-                                        ),
-                                  )
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16
-                              ),
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 12),
-                                height: 331,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        spreadRadius: 5,
-                                        blurRadius: 7,
-                                        offset: Offset(0, 2),
-                                      )
-                                    ],
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: const BorderRadius.all(Radius.circular(20))
-                                ),
-                                child: Column(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl: '${temp['image']}',
-                                      imageBuilder: (context,
-                                          imageProvider) =>
-                                          Container(
-                                            width: double.infinity,
-                                            height: 192,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.fill,
-                                              ),
-                                              // color: Colors.white,
-                                              borderRadius: const BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  children: [
-                                                    Align(
-                                                      alignment: Alignment.bottomLeft,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                                                        child: Container(
-                                                          height: 22,
-                                                          width: 50,
-                                                          decoration: BoxDecoration(
-                                                              boxShadow: const [
-                                                                BoxShadow(
-                                                                  color: Colors.black12,
-                                                                  spreadRadius: 5,
-                                                                  blurRadius: 7,
-                                                                  offset: Offset(0, 2),
-                                                                )
-                                                              ],
-                                                              color: Theme.of(context).primaryColor,
-                                                              borderRadius: const BorderRadius.all(Radius.circular(9))
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              Icon(
-                                                                  Icons.star,
-                                                                  color: Theme.of(context).dividerColor,
-                                                                  size: 17
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 2),
-                                                              Text(
-                                                                temp['res_rating'],
-                                                                style: const TextStyle(
-                                                                    fontSize: 15),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                                      child: Align(
-                                                        alignment: Alignment.topRight,
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              boxShadow: const [
-                                                                BoxShadow(
-                                                                  color: Colors.black12,
-                                                                  spreadRadius: 5,
-                                                                  blurRadius: 7,
-                                                                  offset: Offset(0, 2),
-                                                                )
-                                                              ],
-                                                              color: Theme.of(context).primaryColor,
-                                                              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(11), topLeft: Radius.circular(11))
-                                                          ),
-                                                          height: 32,
-                                                          width: 64,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              Text(
-                                                                temp['share_size'],
-                                                                style: TextStyle(
-                                                                    color: Theme.of(context).backgroundColor,
-                                                                    fontSize: 20,
-                                                                    fontFamily: 'SFProLight'
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                      placeholder: (context, url) => SizedBox(
-                                        height: 192,
-                                        child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: const CircularProgressIndicator(
-                                              strokeWidth: 5,
-                                              backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                            )
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                            height: 192,
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Не удалось загрузить изображение',
-                                                  style: TextStyle(
-                                                      color: Theme
-                                                          .of(context)
-                                                          .canvasColor,
-                                                      fontSize: 15,
-                                                      fontFamily: 'SFProLight'
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                    ),
-                                    Container(
-                                      height: 139,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        borderRadius: const BorderRadius.only(
-                                            bottomRight: Radius.circular(20),
-                                            bottomLeft: Radius.circular(20)
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      imageUrl: '${temp['icon_res']}',
-                                                      imageBuilder: (context, imageProvider) => Container(
-                                                        height: 40,
-                                                        width: 40,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: const BorderRadius.all(Radius.circular(50)),
-                                                            image: DecorationImage(
-                                                                image: imageProvider,
-                                                                fit: BoxFit.fitHeight
-                                                            )
-                                                        ),
-                                                      ),
-                                                      placeholder: (context, url) =>
-                                                          Container(
-                                                            height: 42,
-                                                            width: 42,
-                                                            decoration: BoxDecoration(
-                                                                borderRadius: const BorderRadius.all(Radius.circular(50)),
-                                                                color: Theme.of(context).backgroundColor
-                                                            ),
-                                                          ),
-                                                      errorWidget: (context, url, error) =>
-                                                          Container(),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            temp.get('name_institution'),
-                                                            style: TextStyle(
-                                                                color: Theme.of(context).canvasColor,
-                                                                fontSize: 20,
-                                                                fontFamily: 'SFProLight'
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            // 'с 18.09 до 25.09',
-                                                            'с ${temp.get('start_date')} по ${temp.get('end_date')}',
-                                                            style: TextStyle(
-                                                                color: Theme.of(context).hintColor,
-                                                                fontSize: 14,
-                                                                fontFamily: 'SFProLight'
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      height: 42,
-                                                      width: 42,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.transparent,
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                            color: Theme.of(context).backgroundColor
-                                                        ),
-                                                      ),
-                                                      child: IconButton(
-                                                          onPressed: () async {
-                                                            favProvider.addStockToFav(
-                                                                context,
-                                                                temp['basic_description'],
-                                                                temp['short_description'],
-                                                                temp['email'],
-                                                                temp['end_date'],
-                                                                temp['name_institution'],
-                                                                temp['name_stocks'],
-                                                                temp['start_date'],
-                                                                temp['phone_number'],
-                                                                temp['information_about_the_rest'],
-                                                                temp['operating_mode'],
-                                                                temp['share_size'],
-                                                                temp['res_rating'],
-                                                                temp['image'],
-                                                                temp['icon_res'],
-                                                                temp['full_address'],
-                                                                temp['short_address']
-                                                            );
-                                                          },
-                                                          icon: Icon(
-                                                              CupertinoIcons.heart,
-                                                              size: 27,
-                                                              color: Theme.of(context).backgroundColor
-                                                          )
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Container(
-                                                      height: 42,
-                                                      width: 42,
-                                                      decoration: BoxDecoration(
-                                                        color: Theme.of(context).backgroundColor,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: IconButton(
-                                                          onPressed: () {
-                                                            _makePhoneCall(
-                                                                'tel:${temp['phone_number']}');
-                                                          },
-                                                          icon: Icon(
-                                                            CupertinoIcons.phone,
-                                                            size: 27,
-                                                            color: Theme.of(context).primaryColor,
-                                                          )
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
-                                              child: Text(
-                                                temp.get('short_description'),
-                                                style: const TextStyle(
-                                                    fontFamily: 'SFProLight',
-                                                    fontSize: 16
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                  stream: providerButt.selectedCity == S.of(context).tolyatti_text ? changeProvider.changeCategory(categories, stocks, selectedIndex) : changeProvider.changeCategory(categories, stocksSam, selectedIndex),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshots) {
+                    return (snapshots.hasData)
+                        ? ListView.builder(
+                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                        itemCount: snapshots.data!.docs.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
+                          var temp = snapshots.data!.docs[index];
+                          if(name.isEmpty) {
+                            return templateProvider.stockTemplate(
+                                context, temp['short_description'],
+                                temp['email'],
+                                temp['end_date'],
+                                temp['basic_description'],
+                                temp['name_stocks'],
+                                temp['name_institution'],
+                                temp['start_date'],
+                                temp['phone_number'],
+                                temp['information_about_the_rest'],
+                                temp['operating_mode'],
+                                temp['share_size'],
+                                temp['res_rating'],
+                                temp['image'],
+                                temp['icon_res'],
+                                temp['full_address'],
+                                temp['short_address'],
+                                temp['link_to_the_int'],
+                                temp['link_to_the_vk'],
+                                temp['tags'],
+                                temp['url_photos']
+                            );
+                          }
+                          if(data['name_institution'].toString().toLowerCase().startsWith(name.toLowerCase())) {
+                            return templateProvider.stockTemplate(
+                                context, temp['short_description'],
+                                temp['email'],
+                                temp['end_date'],
+                                temp['basic_description'],
+                                temp['name_stocks'],
+                                temp['name_institution'],
+                                temp['start_date'],
+                                temp['phone_number'],
+                                temp['information_about_the_rest'],
+                                temp['operating_mode'],
+                                temp['share_size'],
+                                temp['res_rating'],
+                                temp['image'],
+                                temp['icon_res'],
+                                temp['full_address'],
+                                temp['short_address'],
+                                temp['link_to_the_int'],
+                                temp['link_to_the_vk'],
+                                temp['tags'],
+                                temp['url_photos']
+                            );
+                          } else {
+                            return Container();
+                          }
                         }
-                        if(data['name_institution']
-                            .toString()
-                            .toLowerCase()
-                            .startsWith(name.toLowerCase())){
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (_) =>
-                                        SelectedPromoWidgetInPromo(
-                                          model: TargetPromoModel(
-                                              shortDescription: temp['short_description'],
-                                              email: temp['email'],
-                                              endDate: temp['end_date'],
-                                              basicDescription: temp['basic_description'],
-                                              nameStocks: temp['name_stocks'],
-                                              nameInstitution: temp['name_institution'],
-                                              startDate: temp['start_date'],
-                                              phoneNumber: temp['phone_number'],
-                                              informationAboutTheRest: temp['information_about_the_rest'],
-                                              operatingMode: temp['operating_mode'],
-                                              shareSize: temp['share_size'],
-                                              resRating: temp['res_rating'],
-                                              image: temp['image'],
-                                              iconRes: temp['icon_res'],
-                                              fullAddress: temp['full_address'],
-                                              shortAddress: temp['short_address'],
-                                              linkToTheInt: temp['link_to_the_int'],
-                                              linkToTheVk: temp['link_to_the_vk'],
-                                          ),
-                                        ),
-                                  )
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16
-                              ),
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 12),
-                                height: 331,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        spreadRadius: 5,
-                                        blurRadius: 7,
-                                        offset: Offset(0, 2),
-                                      )
-                                    ],
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: const BorderRadius.all(Radius.circular(20))
-                                ),
-                                child: Column(
-                                  children: [
-                                    CachedNetworkImage(
-                                      imageUrl: '${temp['image']}',
-                                      imageBuilder: (context,
-                                          imageProvider) =>
-                                          Container(
-                                            width: double.infinity,
-                                            height: 192,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.fill,
-                                              ),
-                                              // color: Colors.white,
-                                              borderRadius: const BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  children: [
-                                                    Align(
-                                                      alignment: Alignment.bottomLeft,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                                                        child: Container(
-                                                          height: 22,
-                                                          width: 50,
-                                                          decoration: BoxDecoration(
-                                                              boxShadow: const [
-                                                                BoxShadow(
-                                                                  color: Colors.black12,
-                                                                  spreadRadius: 5,
-                                                                  blurRadius: 7,
-                                                                  offset: Offset(0, 2),
-                                                                )
-                                                              ],
-                                                              color: Theme.of(context).primaryColor,
-                                                              borderRadius: const BorderRadius.all(Radius.circular(9))
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              Icon(
-                                                                  Icons.star,
-                                                                  color: Theme.of(context).dividerColor,
-                                                                  size: 17
-                                                              ),
-                                                              const SizedBox(
-                                                                  width: 2),
-                                                              Text(
-                                                                temp['res_rating'],
-                                                                style: const TextStyle(
-                                                                    fontSize: 15),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                                      child: Align(
-                                                        alignment: Alignment.topRight,
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                              boxShadow: const [
-                                                                BoxShadow(
-                                                                  color: Colors.black12,
-                                                                  spreadRadius: 5,
-                                                                  blurRadius: 7,
-                                                                  offset: Offset(0, 2),
-                                                                )
-                                                              ],
-                                                              color: Theme.of(context).primaryColor,
-                                                              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(11), topLeft: Radius.circular(11))
-                                                          ),
-                                                          height: 32,
-                                                          width: 64,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              Text(
-                                                                temp['share_size'],
-                                                                style: TextStyle(
-                                                                    color: Theme.of(context).backgroundColor,
-                                                                    fontSize: 20,
-                                                                    fontFamily: 'SFProLight'
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                      placeholder: (context, url) => SizedBox(
-                                        height: 192,
-                                        child: Container(
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: const CircularProgressIndicator(
-                                              strokeWidth: 5,
-                                              backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                            )
-                                        ),
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                            height: 192,
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                  topRight: Radius.circular(20),
-                                                  topLeft: Radius.circular(20)
-                                              ),
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'Не удалось загрузить изображение',
-                                                  style: TextStyle(
-                                                      color: Theme
-                                                          .of(context)
-                                                          .canvasColor,
-                                                      fontSize: 15,
-                                                      fontFamily: 'SFProLight'
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                    ),
-                                    Container(
-                                      height: 139,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        borderRadius: const BorderRadius.only(
-                                            bottomRight: Radius.circular(20),
-                                            bottomLeft: Radius.circular(20)
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    CachedNetworkImage(
-                                                      imageUrl: '${temp['icon_res']}',
-                                                      imageBuilder: (context, imageProvider) => Container(
-                                                        height: 40,
-                                                        width: 40,
-                                                        decoration: BoxDecoration(
-                                                            borderRadius: const BorderRadius.all(Radius.circular(50)),
-                                                            image: DecorationImage(
-                                                                image: imageProvider,
-                                                                fit: BoxFit.fitHeight
-                                                            )
-                                                        ),
-                                                      ),
-                                                      placeholder: (context, url) =>
-                                                          Container(
-                                                            height: 42,
-                                                            width: 42,
-                                                            decoration: BoxDecoration(
-                                                                borderRadius: const BorderRadius.all(Radius.circular(50)),
-                                                                color: Theme.of(context).backgroundColor
-                                                            ),
-                                                          ),
-                                                      errorWidget: (context, url, error) =>
-                                                          Container(),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            temp.get('name_institution'),
-                                                            style: TextStyle(
-                                                                color: Theme.of(context).canvasColor,
-                                                                fontSize: 20,
-                                                                fontFamily: 'SFProLight'
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            // 'с 18.09 до 25.09',
-                                                            'с ${temp.get('start_date')} по ${temp.get('end_date')}',
-                                                            style: TextStyle(
-                                                                color: Theme.of(context).hintColor,
-                                                                fontSize: 14,
-                                                                fontFamily: 'SFProLight'
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      height: 42,
-                                                      width: 42,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.transparent,
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                            color: Theme.of(context).backgroundColor
-                                                        ),
-                                                      ),
-                                                      child: IconButton(
-                                                          onPressed: () async {
-                                                            favProvider.addStockToFav(
-                                                                context,
-                                                                temp['basic_description'],
-                                                                temp['short_description'],
-                                                                temp['email'],
-                                                                temp['end_date'],
-                                                                temp['name_institution'],
-                                                                temp['name_stocks'],
-                                                                temp['start_date'],
-                                                                temp['phone_number'],
-                                                                temp['information_about_the_rest'],
-                                                                temp['operating_mode'],
-                                                                temp['share_size'],
-                                                                temp['res_rating'],
-                                                                temp['image'],
-                                                                temp['icon_res'],
-                                                                temp['full_address'],
-                                                                temp['short_address']
-                                                            );
-                                                          },
-                                                          icon: Icon(
-                                                              CupertinoIcons.heart,
-                                                              size: 27,
-                                                              color: Theme.of(context).backgroundColor
-                                                          )
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 8,
-                                                    ),
-                                                    Container(
-                                                      height: 42,
-                                                      width: 42,
-                                                      decoration: BoxDecoration(
-                                                        color: Theme.of(context).backgroundColor,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                      child: IconButton(
-                                                          onPressed: () {
-                                                            _makePhoneCall(
-                                                                'tel:${temp['phone_number']}');
-                                                          },
-                                                          icon: Icon(
-                                                            CupertinoIcons.phone,
-                                                            size: 27,
-                                                            color: Theme.of(context).primaryColor,
-                                                          )
-                                                      ),
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Padding(
-                                              padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
-                                              child: Text(
-                                                temp.get('short_description'),
-                                                style: const TextStyle(
-                                                    fontFamily: 'SFProLight',
-                                                    fontSize: 16
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                        else {
-                          return Container();
-                        }
-                      }
-                  )
-                      : const Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 5,
-                        backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      )
-                  );
-                }
-            ),
+                    )
+                        : Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 5,
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                        )
+                    );
+                  }
+              )
+
           );
-  }
-
-  Future<void> _makePhoneCall(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  Widget buildCategory (int index){
-    return GestureDetector(
-      onTap: (){
-        setState(() {
-          selectedIndex = index;
-        });
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            color: selectedIndex == index
-                ? Theme.of(context).focusColor
-                : Colors.transparent,
-            borderRadius: const BorderRadius.all(Radius.circular(10))
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Center(
-            child: Text(
-              categories[index],
-              style: TextStyle(
-                  fontFamily: 'SFProLight',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: selectedIndex == index
-                      ? Theme.of(context).cardColor
-                      : Theme.of(context).indicatorColor
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   bool get wantKeepAlive => true;
 }
-
-// class CartsBody extends StatefulWidget {
-//    const CartsBody({Key? key, }) : super(key: key);
-//
-//   @override
-//   State<CartsBody> createState() => _CartsBodyState();
-// }
-//
-// class _CartsBodyState extends State<CartsBody> {
-//   final ref = FirebaseFirestore.instance.collection('stocks');
-//   String name = '';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // super.build(context);
-//     final favProvider = Provider.of<FavoritesProvider>(context);
-//     return StreamBuilder<QuerySnapshot>(
-//         stream: ref.snapshots(),
-//         builder: (context, AsyncSnapshot<QuerySnapshot> snapshots) {
-//           return (snapshots.hasData)
-//               ? ListView.builder(
-//               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-//               itemCount: snapshots.data!.docs.length,
-//               physics: const BouncingScrollPhysics(),
-//               itemBuilder: (context, index) {
-//                 var data = snapshots.data!.docs[index].data() as Map<String, dynamic>;
-//                 var temp = snapshots.data!.docs[index];
-//                 if(name.isEmpty) {
-//                   return GestureDetector(
-//                     onTap: () {
-//                       Navigator.push(
-//                           context,
-//                           CupertinoPageRoute(
-//                             builder: (_) =>
-//                                 SelectedPromoWidgetInPromo(
-//                                   model: TargetPromoModel(
-//                                       shortDescription: temp['short_description'],
-//                                       email: temp['email'],
-//                                       endDate: temp['end_date'],
-//                                       basicDescription: temp['basic_description'],
-//                                       nameStocks: temp['name_stocks'],
-//                                       nameInstitution: temp['name_institution'],
-//                                       startDate: temp['start_date'],
-//                                       phoneNumber: temp['phone_number'],
-//                                       informationAboutTheRest: temp['information_about_the_rest'],
-//                                       operatingMode: temp['operating_mode'],
-//                                       shareSize: temp['share_size'],
-//                                       resRating: temp['res_rating'],
-//                                       image: temp['image'],
-//                                       iconRes: temp['icon_res'],
-//                                       fullAddress: temp['full_address'],
-//                                       shortAddress: temp['short_address']
-//                                   ),
-//                                 ),
-//                           )
-//                       );
-//                     },
-//                     child: Padding(
-//                       padding: const EdgeInsets.symmetric(
-//                           horizontal: 16
-//                       ),
-//                       child: Container(
-//                         margin: const EdgeInsets.symmetric(vertical: 12),
-//                         height: 331,
-//                         width: double.infinity,
-//                         decoration: BoxDecoration(
-//                             boxShadow: const [
-//                               BoxShadow(
-//                                 color: Colors.black12,
-//                                 spreadRadius: 5,
-//                                 blurRadius: 7,
-//                                 offset: Offset(0, 2),
-//                               )
-//                             ],
-//                             color: Theme.of(context).primaryColor,
-//                             borderRadius: const BorderRadius.all(Radius.circular(20))
-//                         ),
-//                         child: Column(
-//                           children: [
-//                             CachedNetworkImage(
-//                               imageUrl: '${temp['image']}',
-//                               imageBuilder: (context,
-//                                   imageProvider) =>
-//                                   Container(
-//                                     width: double.infinity,
-//                                     height: 192,
-//                                     decoration: BoxDecoration(
-//                                       image: DecorationImage(
-//                                         image: imageProvider,
-//                                         fit: BoxFit.fill,
-//                                       ),
-//                                       // color: Colors.white,
-//                                       borderRadius: const BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     child: Row(
-//                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                       children: [
-//                                         Column(
-//                                           mainAxisAlignment: MainAxisAlignment.end,
-//                                           children: [
-//                                             Align(
-//                                               alignment: Alignment.bottomLeft,
-//                                               child: Padding(
-//                                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-//                                                 child: Container(
-//                                                   height: 22,
-//                                                   width: 50,
-//                                                   decoration: BoxDecoration(
-//                                                       boxShadow: const [
-//                                                         BoxShadow(
-//                                                           color: Colors.black12,
-//                                                           spreadRadius: 5,
-//                                                           blurRadius: 7,
-//                                                           offset: Offset(0, 2),
-//                                                         )
-//                                                       ],
-//                                                       color: Theme.of(context).primaryColor,
-//                                                       borderRadius: const BorderRadius.all(Radius.circular(9))
-//                                                   ),
-//                                                   child: Row(
-//                                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Icon(
-//                                                           Icons.star,
-//                                                           color: Theme.of(context).dividerColor,
-//                                                           size: 17
-//                                                       ),
-//                                                       const SizedBox(
-//                                                           width: 2),
-//                                                       Text(
-//                                                         temp['res_rating'],
-//                                                         style: const TextStyle(
-//                                                             fontSize: 15),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                             )
-//                                           ],
-//                                         ),
-//                                         Column(
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//                                             Padding(
-//                                               padding: const EdgeInsets.symmetric(vertical: 14),
-//                                               child: Align(
-//                                                 alignment: Alignment.topRight,
-//                                                 child: Container(
-//                                                   decoration: BoxDecoration(
-//                                                       boxShadow: const [
-//                                                         BoxShadow(
-//                                                           color: Colors.black12,
-//                                                           spreadRadius: 5,
-//                                                           blurRadius: 7,
-//                                                           offset: Offset(0, 2),
-//                                                         )
-//                                                       ],
-//                                                       color: Theme.of(context).primaryColor,
-//                                                       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(11), topLeft: Radius.circular(11))
-//                                                   ),
-//                                                   height: 32,
-//                                                   width: 64,
-//                                                   child: Row(
-//                                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Text(
-//                                                         temp['share_size'],
-//                                                         style: TextStyle(
-//                                                             color: Theme.of(context).backgroundColor,
-//                                                             fontSize: 20,
-//                                                             fontFamily: 'SFProLight'
-//                                                         ),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         )
-//                                       ],
-//                                     ),
-//                                   ),
-//                               placeholder: (context, url) => SizedBox(
-//                                 height: 192,
-//                                 child: Container(
-//                                     decoration: const BoxDecoration(
-//                                       borderRadius: BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     alignment: Alignment.center,
-//                                     child: const CircularProgressIndicator(
-//                                       strokeWidth: 5,
-//                                       backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-//                                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//                                     )
-//                                 ),
-//                               ),
-//                               errorWidget: (context, url, error) =>
-//                                   Container(
-//                                     height: 192,
-//                                     decoration: const BoxDecoration(
-//                                       borderRadius: BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     child: Column(
-//                                       mainAxisAlignment: MainAxisAlignment.center,
-//                                       children: [
-//                                         Text(
-//                                           'Не удалось загрузить изображение',
-//                                           style: TextStyle(
-//                                               color: Theme
-//                                                   .of(context)
-//                                                   .canvasColor,
-//                                               fontSize: 15,
-//                                               fontFamily: 'SFProLight'
-//                                           ),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                             ),
-//                             Container(
-//                               height: 139,
-//                               width: double.infinity,
-//                               decoration: BoxDecoration(
-//                                 color: Theme.of(context).primaryColor,
-//                                 borderRadius: const BorderRadius.only(
-//                                     bottomRight: Radius.circular(20),
-//                                     bottomLeft: Radius.circular(20)
-//                                 ),
-//                               ),
-//                               child: Padding(
-//                                 padding: const EdgeInsets.all(16),
-//                                 child: Column(
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     Row(
-//                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                       children: [
-//                                         Row(
-//                                           children: [
-//                                             CachedNetworkImage(
-//                                               imageUrl: '${temp['icon_res']}',
-//                                               imageBuilder: (context, imageProvider) => Container(
-//                                                 height: 40,
-//                                                 width: 40,
-//                                                 decoration: BoxDecoration(
-//                                                     borderRadius: const BorderRadius.all(Radius.circular(50)),
-//                                                     image: DecorationImage(
-//                                                         image: imageProvider,
-//                                                         fit: BoxFit.fitHeight
-//                                                     )
-//                                                 ),
-//                                               ),
-//                                               placeholder: (context, url) =>
-//                                                   Container(
-//                                                     height: 42,
-//                                                     width: 42,
-//                                                     decoration: BoxDecoration(
-//                                                         borderRadius: const BorderRadius.all(Radius.circular(50)),
-//                                                         color: Theme.of(context).backgroundColor
-//                                                     ),
-//                                                   ),
-//                                               errorWidget: (context, url, error) =>
-//                                                   Container(),
-//                                             ),
-//                                             Padding(
-//                                               padding: const EdgeInsets.symmetric(horizontal: 10),
-//                                               child: Column(
-//                                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                                 children: [
-//                                                   Text(
-//                                                     temp.get('name_institution'),
-//                                                     style: TextStyle(
-//                                                         color: Theme.of(context).canvasColor,
-//                                                         fontSize: 20,
-//                                                         fontFamily: 'SFProLight'
-//                                                     ),
-//                                                   ),
-//                                                   Text(
-//                                                     // 'с 18.09 до 25.09',
-//                                                     'с ${temp.get('start_date')} по ${temp.get('end_date')}',
-//                                                     style: TextStyle(
-//                                                         color: Theme.of(context).hintColor,
-//                                                         fontSize: 14,
-//                                                         fontFamily: 'SFProLight'
-//                                                     ),
-//                                                   ),
-//                                                 ],
-//                                               ),
-//                                             )
-//                                           ],
-//                                         ),
-//                                         Row(
-//                                           children: [
-//                                             Container(
-//                                               height: 42,
-//                                               width: 42,
-//                                               decoration: BoxDecoration(
-//                                                 color: Colors.transparent,
-//                                                 shape: BoxShape.circle,
-//                                                 border: Border.all(
-//                                                     color: Theme.of(context).backgroundColor
-//                                                 ),
-//                                               ),
-//                                               child: IconButton(
-//                                                   onPressed: () async {
-//                                                     favProvider.addStockToFav(
-//                                                         context,
-//                                                         temp['basic_description'],
-//                                                         temp['short_description'],
-//                                                         temp['email'],
-//                                                         temp['end_date'],
-//                                                         temp['name_institution'],
-//                                                         temp['name_stocks'],
-//                                                         temp['start_date'],
-//                                                         temp['phone_number'],
-//                                                         temp['information_about_the_rest'],
-//                                                         temp['operating_mode'],
-//                                                         temp['share_size'],
-//                                                         temp['res_rating'],
-//                                                         temp['image'],
-//                                                         temp['icon_res'],
-//                                                         temp['full_address'],
-//                                                         temp['short_address']
-//                                                     );
-//                                                   },
-//                                                   icon: Icon(
-//                                                       CupertinoIcons.heart,
-//                                                       size: 27,
-//                                                       color: Theme.of(context).backgroundColor
-//                                                   )
-//                                               ),
-//                                             ),
-//                                             const SizedBox(
-//                                               width: 8,
-//                                             ),
-//                                             Container(
-//                                               height: 42,
-//                                               width: 42,
-//                                               decoration: BoxDecoration(
-//                                                 color: Theme.of(context).backgroundColor,
-//                                                 shape: BoxShape.circle,
-//                                               ),
-//                                               child: IconButton(
-//                                                   onPressed: () {
-//                                                     _makePhoneCall(
-//                                                         'tel:${temp['phone_number']}');
-//                                                   },
-//                                                   icon: Icon(
-//                                                     CupertinoIcons.phone,
-//                                                     size: 27,
-//                                                     color: Theme.of(context).primaryColor,
-//                                                   )
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         )
-//                                       ],
-//                                     ),
-//                                     const SizedBox(height: 8),
-//                                     Padding(
-//                                       padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
-//                                       child: Text(
-//                                         temp.get('short_description'),
-//                                         style: const TextStyle(
-//                                             fontFamily: 'SFProLight',
-//                                             fontSize: 16
-//                                         ),
-//                                       ),
-//                                     )
-//                                   ],
-//                                 ),
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 }
-//                 if(data['name_institution']
-//                     .toString()
-//                     .toLowerCase()
-//                     .startsWith(name.toLowerCase())){
-//                   return GestureDetector(
-//                     onTap: () {
-//                       Navigator.push(
-//                           context,
-//                           CupertinoPageRoute(
-//                             builder: (_) =>
-//                                 SelectedPromoWidgetInPromo(
-//                                   model: TargetPromoModel(
-//                                       shortDescription: temp['short_description'],
-//                                       email: temp['email'],
-//                                       endDate: temp['end_date'],
-//                                       basicDescription: temp['basic_description'],
-//                                       nameStocks: temp['name_stocks'],
-//                                       nameInstitution: temp['name_institution'],
-//                                       startDate: temp['start_date'],
-//                                       phoneNumber: temp['phone_number'],
-//                                       informationAboutTheRest: temp['information_about_the_rest'],
-//                                       operatingMode: temp['operating_mode'],
-//                                       shareSize: temp['share_size'],
-//                                       resRating: temp['res_rating'],
-//                                       image: temp['image'],
-//                                       iconRes: temp['icon_res'],
-//                                       fullAddress: temp['full_address'],
-//                                       shortAddress: temp['short_address']
-//                                   ),
-//                                 ),
-//                           )
-//                       );
-//                     },
-//                     child: Padding(
-//                       padding: const EdgeInsets.symmetric(
-//                           horizontal: 16
-//                       ),
-//                       child: Container(
-//                         margin: const EdgeInsets.symmetric(vertical: 12),
-//                         height: 331,
-//                         width: double.infinity,
-//                         decoration: BoxDecoration(
-//                             boxShadow: const [
-//                               BoxShadow(
-//                                 color: Colors.black12,
-//                                 spreadRadius: 5,
-//                                 blurRadius: 7,
-//                                 offset: Offset(0, 2),
-//                               )
-//                             ],
-//                             color: Theme.of(context).primaryColor,
-//                             borderRadius: const BorderRadius.all(Radius.circular(20))
-//                         ),
-//                         child: Column(
-//                           children: [
-//                             CachedNetworkImage(
-//                               imageUrl: '${temp['image']}',
-//                               imageBuilder: (context,
-//                                   imageProvider) =>
-//                                   Container(
-//                                     width: double.infinity,
-//                                     height: 192,
-//                                     decoration: BoxDecoration(
-//                                       image: DecorationImage(
-//                                         image: imageProvider,
-//                                         fit: BoxFit.fill,
-//                                       ),
-//                                       // color: Colors.white,
-//                                       borderRadius: const BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     child: Row(
-//                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                       children: [
-//                                         Column(
-//                                           mainAxisAlignment: MainAxisAlignment.end,
-//                                           children: [
-//                                             Align(
-//                                               alignment: Alignment.bottomLeft,
-//                                               child: Padding(
-//                                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-//                                                 child: Container(
-//                                                   height: 22,
-//                                                   width: 50,
-//                                                   decoration: BoxDecoration(
-//                                                       boxShadow: const [
-//                                                         BoxShadow(
-//                                                           color: Colors.black12,
-//                                                           spreadRadius: 5,
-//                                                           blurRadius: 7,
-//                                                           offset: Offset(0, 2),
-//                                                         )
-//                                                       ],
-//                                                       color: Theme.of(context).primaryColor,
-//                                                       borderRadius: const BorderRadius.all(Radius.circular(9))
-//                                                   ),
-//                                                   child: Row(
-//                                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Icon(
-//                                                           Icons.star,
-//                                                           color: Theme.of(context).dividerColor,
-//                                                           size: 17
-//                                                       ),
-//                                                       const SizedBox(
-//                                                           width: 2),
-//                                                       Text(
-//                                                         temp['res_rating'],
-//                                                         style: const TextStyle(
-//                                                             fontSize: 15),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                             )
-//                                           ],
-//                                         ),
-//                                         Column(
-//                                           mainAxisAlignment: MainAxisAlignment.start,
-//                                           children: [
-//                                             Padding(
-//                                               padding: const EdgeInsets.symmetric(vertical: 14),
-//                                               child: Align(
-//                                                 alignment: Alignment.topRight,
-//                                                 child: Container(
-//                                                   decoration: BoxDecoration(
-//                                                       boxShadow: const [
-//                                                         BoxShadow(
-//                                                           color: Colors.black12,
-//                                                           spreadRadius: 5,
-//                                                           blurRadius: 7,
-//                                                           offset: Offset(0, 2),
-//                                                         )
-//                                                       ],
-//                                                       color: Theme.of(context).primaryColor,
-//                                                       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(11), topLeft: Radius.circular(11))
-//                                                   ),
-//                                                   height: 32,
-//                                                   width: 64,
-//                                                   child: Row(
-//                                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Text(
-//                                                         temp['share_size'],
-//                                                         style: TextStyle(
-//                                                             color: Theme.of(context).backgroundColor,
-//                                                             fontSize: 20,
-//                                                             fontFamily: 'SFProLight'
-//                                                         ),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                 ),
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         )
-//                                       ],
-//                                     ),
-//                                   ),
-//                               placeholder: (context, url) => SizedBox(
-//                                 height: 192,
-//                                 child: Container(
-//                                     decoration: const BoxDecoration(
-//                                       borderRadius: BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     alignment: Alignment.center,
-//                                     child: const CircularProgressIndicator(
-//                                       strokeWidth: 5,
-//                                       backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-//                                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//                                     )
-//                                 ),
-//                               ),
-//                               errorWidget: (context, url, error) =>
-//                                   Container(
-//                                     height: 192,
-//                                     decoration: const BoxDecoration(
-//                                       borderRadius: BorderRadius.only(
-//                                           topRight: Radius.circular(20),
-//                                           topLeft: Radius.circular(20)
-//                                       ),
-//                                     ),
-//                                     child: Column(
-//                                       mainAxisAlignment: MainAxisAlignment.center,
-//                                       children: [
-//                                         Text(
-//                                           'Не удалось загрузить изображение',
-//                                           style: TextStyle(
-//                                               color: Theme
-//                                                   .of(context)
-//                                                   .canvasColor,
-//                                               fontSize: 15,
-//                                               fontFamily: 'SFProLight'
-//                                           ),
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                             ),
-//                             Container(
-//                               height: 139,
-//                               width: double.infinity,
-//                               decoration: BoxDecoration(
-//                                 color: Theme.of(context).primaryColor,
-//                                 borderRadius: const BorderRadius.only(
-//                                     bottomRight: Radius.circular(20),
-//                                     bottomLeft: Radius.circular(20)
-//                                 ),
-//                               ),
-//                               child: Padding(
-//                                 padding: const EdgeInsets.all(16),
-//                                 child: Column(
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     Row(
-//                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                                       children: [
-//                                         Row(
-//                                           children: [
-//                                             CachedNetworkImage(
-//                                               imageUrl: '${temp['icon_res']}',
-//                                               imageBuilder: (context, imageProvider) => Container(
-//                                                 height: 40,
-//                                                 width: 40,
-//                                                 decoration: BoxDecoration(
-//                                                     borderRadius: const BorderRadius.all(Radius.circular(50)),
-//                                                     image: DecorationImage(
-//                                                         image: imageProvider,
-//                                                         fit: BoxFit.fitHeight
-//                                                     )
-//                                                 ),
-//                                               ),
-//                                               placeholder: (context, url) =>
-//                                                   Container(
-//                                                     height: 42,
-//                                                     width: 42,
-//                                                     decoration: BoxDecoration(
-//                                                         borderRadius: const BorderRadius.all(Radius.circular(50)),
-//                                                         color: Theme.of(context).backgroundColor
-//                                                     ),
-//                                                   ),
-//                                               errorWidget: (context, url, error) =>
-//                                                   Container(),
-//                                             ),
-//                                             Padding(
-//                                               padding: const EdgeInsets.symmetric(horizontal: 10),
-//                                               child: Column(
-//                                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                                 children: [
-//                                                   Text(
-//                                                     temp.get('name_institution'),
-//                                                     style: TextStyle(
-//                                                         color: Theme.of(context).canvasColor,
-//                                                         fontSize: 20,
-//                                                         fontFamily: 'SFProLight'
-//                                                     ),
-//                                                   ),
-//                                                   Text(
-//                                                     // 'с 18.09 до 25.09',
-//                                                     'с ${temp.get('start_date')} по ${temp.get('end_date')}',
-//                                                     style: TextStyle(
-//                                                         color: Theme.of(context).hintColor,
-//                                                         fontSize: 14,
-//                                                         fontFamily: 'SFProLight'
-//                                                     ),
-//                                                   ),
-//                                                 ],
-//                                               ),
-//                                             )
-//                                           ],
-//                                         ),
-//                                         Row(
-//                                           children: [
-//                                             Container(
-//                                               height: 42,
-//                                               width: 42,
-//                                               decoration: BoxDecoration(
-//                                                 color: Colors.transparent,
-//                                                 shape: BoxShape.circle,
-//                                                 border: Border.all(
-//                                                     color: Theme.of(context).backgroundColor
-//                                                 ),
-//                                               ),
-//                                               child: IconButton(
-//                                                   onPressed: () async {
-//                                                     favProvider.addStockToFav(
-//                                                         context,
-//                                                         temp['basic_description'],
-//                                                         temp['short_description'],
-//                                                         temp['email'],
-//                                                         temp['end_date'],
-//                                                         temp['name_institution'],
-//                                                         temp['name_stocks'],
-//                                                         temp['start_date'],
-//                                                         temp['phone_number'],
-//                                                         temp['information_about_the_rest'],
-//                                                         temp['operating_mode'],
-//                                                         temp['share_size'],
-//                                                         temp['res_rating'],
-//                                                         temp['image'],
-//                                                         temp['icon_res'],
-//                                                         temp['full_address'],
-//                                                         temp['short_address']
-//                                                     );
-//                                                   },
-//                                                   icon: Icon(
-//                                                       CupertinoIcons.heart,
-//                                                       size: 27,
-//                                                       color: Theme.of(context).backgroundColor
-//                                                   )
-//                                               ),
-//                                             ),
-//                                             const SizedBox(
-//                                               width: 8,
-//                                             ),
-//                                             Container(
-//                                               height: 42,
-//                                               width: 42,
-//                                               decoration: BoxDecoration(
-//                                                 color: Theme.of(context).backgroundColor,
-//                                                 shape: BoxShape.circle,
-//                                               ),
-//                                               child: IconButton(
-//                                                   onPressed: () {
-//                                                     _makePhoneCall(
-//                                                         'tel:${temp['phone_number']}');
-//                                                   },
-//                                                   icon: Icon(
-//                                                     CupertinoIcons.phone,
-//                                                     size: 27,
-//                                                     color: Theme.of(context).primaryColor,
-//                                                   )
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         )
-//                                       ],
-//                                     ),
-//                                     const SizedBox(height: 8),
-//                                     Padding(
-//                                       padding: const EdgeInsets.fromLTRB(0, 0, 60, 0),
-//                                       child: Text(
-//                                         temp.get('short_description'),
-//                                         style: const TextStyle(
-//                                             fontFamily: 'SFProLight',
-//                                             fontSize: 16
-//                                         ),
-//                                       ),
-//                                     )
-//                                   ],
-//                                 ),
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 }
-//                 else {
-//                   return Container();
-//                 }
-//               }
-//           )
-//               : const Center(
-//               child: CircularProgressIndicator(
-//                 strokeWidth: 5,
-//                 backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-//                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//               )
-//           );
-//         }
-//     );
-//   }
-//   Future<void> _makePhoneCall(String url) async {
-//     if (await canLaunch(url)) {
-//       await launch(url);
-//     } else {
-//       throw 'Could not launch $url';
-//     }
-//   }
-// }

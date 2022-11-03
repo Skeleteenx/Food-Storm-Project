@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../generated/l10n.dart';
+
 class SendMessageProvider extends ChangeNotifier {
   File? image;
   String? imageUrl;
@@ -42,15 +44,15 @@ class SendMessageProvider extends ChangeNotifier {
         hideHeader: true,
         adapter: DateTimePickerAdapter(),
         textAlign: TextAlign.center,
-        confirmText: 'Готово',
+        confirmText: S.of(context).done_text,
         confirmTextStyle: TextStyle(color: Theme.of(context).backgroundColor),
         cancelTextStyle: TextStyle(color: Theme.of(context).backgroundColor),
-        cancelText: 'Назад',
+        cancelText: S.of(context).back_text,
          title: Container(
            alignment: Alignment.center,
-           child: const Text(
-             'Выберите дату',
-             style: TextStyle(
+           child: Text(
+             S.of(context).choose_date_text,
+             style: const TextStyle(
                fontFamily: 'SFProSemibold',
                fontSize: 20.0,
              ),
@@ -73,13 +75,13 @@ class SendMessageProvider extends ChangeNotifier {
         hideHeader: true,
         adapter: DateTimePickerAdapter(),
         textAlign: TextAlign.center,
-        confirmText: 'Готово',
-        cancelText: 'Назад',
+        confirmText: S.of(context).done_text,
+        cancelText: S.of(context).back_text,
         title: Container(
           alignment: Alignment.center,
-          child: const Text(
-            'Выберите дату',
-            style: TextStyle(
+          child: Text(
+            S.of(context).choose_date_text,
+            style: const TextStyle(
               fontFamily: 'SFProSemibold',
               fontSize: 20.0,
             ),
@@ -106,7 +108,8 @@ class SendMessageProvider extends ChangeNotifier {
     informationAboutTheRest,
     operatingMode,
     shareSize,
-    resRating
+    resRating,
+    required BuildContext context
   }) async {
     const serviceId = 'service_mhpjycp';
     const templateId = 'template_gaxw47y';
@@ -137,11 +140,33 @@ class SendMessageProvider extends ChangeNotifier {
             'res_rating': resRating
           }
       })
-    );
+    ).whenComplete(
+            () => ScaffoldMessenger
+            .of(context)
+            .showSnackBar(
+            SnackBar(
+                duration: const Duration(milliseconds: 3000),
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      S.of(context).stock_on_block_text,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'SFProLight',
+                          color: Theme.of(context).canvasColor
+                      ),
+                    ),
+                  ],
+                )
+            )
+        )
+    ).whenComplete(() => Navigator.pop(context));
 }
 
   void comToEmail() async {
-    String urlEmail = 'mailto:kuchum.emille@gmail.com';
+    String urlEmail = 'mailto:foodstormtogliatti@gmail.com';
     await launch(urlEmail);
   }
 
@@ -151,5 +176,13 @@ class SendMessageProvider extends ChangeNotifier {
 
   void comToVk(String urlVk) async {
     await launch(urlVk);
+  }
+
+  Future<void> makePhoneCall(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

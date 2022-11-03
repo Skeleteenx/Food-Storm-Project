@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import '../generated/l10n.dart';
 import '../models/hive/hive_model.dart';
 
 class FavoritesProvider extends ChangeNotifier{
-    addStockToFav (
+    addStockToFav(
         BuildContext context,
         String basic_description,
         String short_description,
@@ -20,7 +21,11 @@ class FavoritesProvider extends ChangeNotifier{
         String image,
         String icon_res,
         String full_address,
-        String short_address
+        String short_address,
+        String link_to_the_int,
+        String link_to_the_vk,
+        List<dynamic> tags,
+        List<dynamic> url_photos
       ) {
     final favoriteStocks = HiveModel()
       ..basic_description = basic_description
@@ -38,7 +43,11 @@ class FavoritesProvider extends ChangeNotifier{
       ..image = image
       ..icon_res = icon_res
       ..full_address = full_address
-      ..short_address = short_address;
+      ..short_address = short_address
+      ..linkToTheInt = link_to_the_int
+      ..linkToTheVk = link_to_the_vk
+      ..tags = tags
+      ..url_photos = url_photos;
     final box = Boxes.getPostFromFavorite();
     if (box.containsKey(name_institution)) {
       ScaffoldMessenger
@@ -46,12 +55,12 @@ class FavoritesProvider extends ChangeNotifier{
           .showSnackBar(
           SnackBar(
               duration: const Duration(milliseconds: 700),
-              backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Эта акция уже находится в избранном.',
+                    S.of(context).already_have_text,
                     style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'SFProLight',
@@ -71,12 +80,12 @@ class FavoritesProvider extends ChangeNotifier{
           .showSnackBar(
           SnackBar(
               duration: const Duration(milliseconds: 700),
-              backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Акция добавлена в избранное.',
+                    S.of(context).stock_added_text,
                     style: TextStyle(
                         fontSize: 14,
                         fontFamily: 'SFProLight',
@@ -98,12 +107,12 @@ class FavoritesProvider extends ChangeNotifier{
             .showSnackBar(
             SnackBar(
                 duration: const Duration(milliseconds: 700),
-                backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Акция удалена из избранного.',
+                      S.of(context).removed_stock_text,
                       style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'SFProLight',
@@ -114,12 +123,33 @@ class FavoritesProvider extends ChangeNotifier{
                 )
             )
         )
-    );;
+    );
 }
 
- Future deleteAllStocks() async {
+ Future deleteAllStocks(BuildContext context) async {
   final box = await Hive.openBox<HiveModel>('stocks');
-  await box.clear();
+  await box.clear().whenComplete(
+          () => ScaffoldMessenger
+          .of(context)
+          .showSnackBar(
+          SnackBar(
+              backgroundColor: Theme.of(context).secondaryHeaderColor,
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    S.of(context).all_stocks_removed,
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'SFProLight',
+                        color: Theme.of(context).canvasColor
+                    ),
+                  ),
+                ],
+              )
+          )
+      )
+  );
 }
 
 }

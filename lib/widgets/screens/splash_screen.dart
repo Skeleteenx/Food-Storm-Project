@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
                 // SizedBox(width: 5,),
                 Text(
-                  (S.of(context).splash_screen_title),
+                  (S.of(context).app_name_text),
                   // 'Food Storm',
                   style: TextStyle(
                       color: Theme.of(context).primaryColor,

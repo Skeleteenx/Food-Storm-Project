@@ -60,7 +60,10 @@ class HiveModel extends HiveObject {
   late String? linkToTheVk;
 
   @HiveField(18)
-  late Map? tags;
+  late List<dynamic>? tags;
+
+  @HiveField(19)
+  late List<dynamic>? url_photos;
 
   HiveModel({
     this.basic_description,
@@ -81,6 +84,7 @@ class HiveModel extends HiveObject {
     this.short_address,
     this.linkToTheInt,
     this.linkToTheVk,
-    this.tags
+    this.tags,
+    this.url_photos
   });
 }

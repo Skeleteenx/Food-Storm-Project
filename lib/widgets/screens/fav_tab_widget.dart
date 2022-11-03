@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
+import '../../generated/l10n.dart';
 import '../../models/hive/hive_model.dart';
 import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
@@ -27,7 +28,7 @@ class _FavTabWidgetState extends State<FavTabWidget> {
         if(hiveBox.isNotEmpty){
           return StocksPresent();
         }else{
-          return ArentStocks();
+          return const ArentStocks();
         }
       }
     );
@@ -50,15 +51,15 @@ class _StocksPresentState extends State<StocksPresent> {
         builder: (BuildContext ctx) {
           final favProvider = Provider.of<FavoritesProvider>(context);
           return AlertDialog(
-            title: const Text(
-              'Пожалуйста подтвердите',
-              style: TextStyle(
+            title: Text(
+              S.of(context).confirm_text,
+              style: const TextStyle(
                 fontSize: 20,
               fontFamily: 'SFProLight',
-            ),
+              ),
             ),
             content: Text(
-              'Вы точно хотите удалить все акции из избранного?',
+              S.of(context).sure_confirm_text,
               style: TextStyle(
                 fontFamily: 'SFProLight',
                 color: Theme.of(context).cardColor
@@ -67,32 +68,11 @@ class _StocksPresentState extends State<StocksPresent> {
             actions: [
               TextButton(
                   onPressed: (){
-                    favProvider.deleteAllStocks().whenComplete(
-                            () => ScaffoldMessenger
-                            .of(context)
-                            .showSnackBar(
-                            SnackBar(
-                              backgroundColor: const Color.fromRGBO(233, 245, 238, 1),
-                                content: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Все акции удалены из избранного',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: 'SFProLight',
-                                          color: Theme.of(context).canvasColor
-                                      ),
-                                    ),
-                                  ],
-                                )
-                            )
-                        )
-                    );
+                    favProvider.deleteAllStocks(context);
                     Navigator.of(context).pop();
                   },
                   child: Text(
-                    'Да',
+                    S.of(context).yes_text,
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'SFProLight',
@@ -105,7 +85,7 @@ class _StocksPresentState extends State<StocksPresent> {
                   Navigator.of(context).pop();
                 },
                 child: Text(
-                  'Нет',
+                  S.of(context).no_text,
                   style: TextStyle(
                       fontSize: 16,
                       fontFamily: 'SFProLight',
@@ -154,13 +134,13 @@ class _StocksPresentState extends State<StocksPresent> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Избранное',
+                    S.of(context).fav_tab_text,
                     style: h1,
                   ),
                   GestureDetector(
                     onTap: () => _deleteAll(context),
                     child: Text(
-                      'Очистить',
+                      S.of(context).clear_text,
                       style: TextStyle(
                         color: Theme.of(context).canvasColor,
                         fontSize: 14,
@@ -172,7 +152,7 @@ class _StocksPresentState extends State<StocksPresent> {
             ),
             SizedBox(
               width: double.infinity,
-              height: 600,
+              height: 604,
               child: GridView.builder(
                 itemCount: hiveBox.length,
                 physics: const BouncingScrollPhysics(),
@@ -206,6 +186,8 @@ class _StocksPresentState extends State<StocksPresent> {
                                     shortAddress: '${hiveList[index].short_address}',
                                     linkToTheInt: '${hiveList[index].linkToTheInt}',
                                     linkToTheVk: '${hiveList[index].linkToTheVk}',
+                                    tags: hiveList[index].tags as List<dynamic>,
+                                    urlPhotos: hiveList[index].url_photos as List<dynamic>
                                 ),
                               )
                           )
@@ -233,6 +215,7 @@ class _StocksPresentState extends State<StocksPresent> {
                               alignment: Alignment.topCenter,
                               child: Container(
                                 decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
                                     borderRadius: const BorderRadius.only(
                                         topLeft: Radius.circular(11),
                                         topRight: Radius.circular(11)
@@ -310,7 +293,7 @@ class _StocksPresentState extends State<StocksPresent> {
                               ),
                             ),
                             placeholder: (context, url) => SizedBox(
-                              height: 128,
+                              height: 113,
                               child: Align(
                                 alignment: Alignment.topCenter,
                                 child: Container(
@@ -321,10 +304,32 @@ class _StocksPresentState extends State<StocksPresent> {
                                           topRight: Radius.circular(11)
                                       ),
                                   ),
-                                    child: const CircularProgressIndicator(
+                                    child: CircularProgressIndicator(
                                       strokeWidth: 5,
-                                      backgroundColor: Color.fromRGBO(60, 180, 110, 1),
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      backgroundColor: Theme.of(context).backgroundColor,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                                    )
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => SizedBox(
+                              height: 113,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                    alignment: Alignment.center,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(11),
+                                          topRight: Radius.circular(11)
+                                      ),
+                                    ),
+                                    child: Text(
+                                      S.of(context).error_text,
+                                      style: const TextStyle(
+                                          fontFamily: 'SFProBold',
+                                          fontSize: 12
+                                      ),
                                     )
                                 ),
                               ),
@@ -401,7 +406,7 @@ class _StocksPresentState extends State<StocksPresent> {
                                           children: [
                                             IconButton(
                                               onPressed: () {
-                                                   favProvider.deleteStock(index, context);
+                                                    favProvider.deleteStock(index, context);
                                             },
                                               icon: Icon(
                                               shadows: const [
@@ -453,7 +458,6 @@ class _StocksPresentState extends State<StocksPresent> {
                                           ),
                                           placeholder: (context, url) =>
                                               Container(
-                                                // height: 22.75,
                                                 height: 26,
                                                 width: 26,
                                                 decoration: BoxDecoration(
@@ -462,7 +466,11 @@ class _StocksPresentState extends State<StocksPresent> {
                                                 ),
                                               ),
                                           errorWidget: (context, url, error) =>
-                                              Container(),
+                                              const SizedBox(
+                                                height: 26,
+                                                  width: 26,
+                                                  child: CircularProgressIndicator()
+                                              ),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -473,7 +481,8 @@ class _StocksPresentState extends State<StocksPresent> {
                                                 '${hiveList[index].name_institution}',
                                                 style: const TextStyle(
                                                     fontSize: 16,
-                                                    fontFamily: 'SFProLight'),
+                                                    fontFamily: 'SFProLight'
+                                                ),
                                               ),
                                               Text(
                                                 // 'с 18.10 до 26.05',
@@ -549,14 +558,11 @@ class _StocksPresentState extends State<StocksPresent> {
 class ArentStocks extends StatefulWidget {
   const ArentStocks({Key? key}) : super(key: key);
 
-
   @override
   State<ArentStocks> createState() => _ArentStocksState();
 }
 
 class _ArentStocksState extends State<ArentStocks> {
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -571,17 +577,6 @@ class _ArentStocksState extends State<ArentStocks> {
     );
     final tabProvider = Provider.of<MatTabBarProvider>(context);
     return Scaffold(
-      // appBar: AppBar(
-      //   elevation: 0.0,
-      //   title: Text(
-      //     'Избранное',
-      //     style: TextStyle(
-      //         fontSize: 24,
-      //         fontFamily: 'SFProSemibold',
-      //         color: Theme.of(context).canvasColor,
-      //     ),
-      //   ),
-      // ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -590,7 +585,6 @@ class _ArentStocksState extends State<ArentStocks> {
             Column(
               children: [
                 Container(
-                  // margin: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(20),
@@ -604,7 +598,7 @@ class _ArentStocksState extends State<ArentStocks> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Избранное',
+                        S.of(context).fav_tab_text,
                         style: h2,
                       ),
                     ],
@@ -616,16 +610,16 @@ class _ArentStocksState extends State<ArentStocks> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 230,),
-                const Text(
-                    'Здесь отображаются избранные акции.',
+                Text(
+                    S.of(context).thirst_fav_info_text,
                     style: h1
                 ),
-                const Text(
-                  'Нажмите на сердечко, чтобы добавить акцию',
+                Text(
+                  S.of(context).second_fav_info_text,
                   style: h1,
                 ),
-                const Text(
-                  'в “Избранное”.',
+                Text(
+                  S.of(context).third_fav_info_text,
                   style: h1,
                 ),
                 const SizedBox(height: 32),
@@ -642,7 +636,7 @@ class _ArentStocksState extends State<ArentStocks> {
                         tabProvider.onItemTapped(0);
                       },
                       child: Text(
-                        'Перейти к акциям',
+                        S.of(context).go_to_stocks_text,
                         style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontFamily: 'SFPro',
@@ -654,42 +648,6 @@ class _ArentStocksState extends State<ArentStocks> {
                 ),
               ],
             ),
-            // const Text(
-            //     'Здесь отображаются избранные акции.',
-            //     style: h1
-            // ),
-            // const Text(
-            //   'Нажмите на сердечко, чтобы добавить акцию',
-            //   style: h1,
-            // ),
-            // const Text(
-            //   'в “Избранное”.',
-            //   style: h1,
-            // ),
-            // const SizedBox(height: 32),
-            // SizedBox(
-            //   width: double.infinity,
-            //   height: 44,
-            //   child: Container(
-            //     decoration: BoxDecoration(
-            //         color: Theme.of(context).backgroundColor,
-            //         borderRadius: const BorderRadius.all(Radius.circular(11))
-            //     ),
-            //     child: TextButton(
-            //       onPressed: (){
-            //         tabProvider.onItemTapped(0);
-            //       },
-            //       child: Text(
-            //         'Перейти к акциям',
-            //         style: TextStyle(
-            //             color: Theme.of(context).primaryColor,
-            //             fontFamily: 'SFPro',
-            //             fontSize: 14
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

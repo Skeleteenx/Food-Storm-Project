@@ -3,6 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/buttons_provider.dart';
 
 class MapsTabWidget extends StatefulWidget {
   const MapsTabWidget({Key? key}) : super(key: key);
@@ -11,8 +14,7 @@ class MapsTabWidget extends StatefulWidget {
   State<MapsTabWidget> createState() => _MapsTabWidgetState();
 }
 
-class _MapsTabWidgetState extends State<MapsTabWidget>
-    with AutomaticKeepAliveClientMixin {
+class _MapsTabWidgetState extends State<MapsTabWidget> {
 
   Location location = Location();
 
@@ -27,6 +29,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
   @override
   void initState(){
     fuckingMarkers();
+    fuckingMarkers2();
     setCustomMarker();
     super.initState();
   }
@@ -36,6 +39,16 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
         const ImageConfiguration(),
         'assets/images/map-marker-Filled.png'
     );
+  }
+
+  fuckingMarkers2() {
+    _database.collection("samara").get().then((documents) {
+      if(documents.docs.isNotEmpty) {
+        for(int i= 0; i < documents.docs.length; i++) {
+          initMarker(documents.docs[i].data(), documents.docs[i].id);
+        }
+      }
+    });
   }
 
   fuckingMarkers() {
@@ -58,7 +71,6 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
         return 0.0;
       }
     } catch (e) {
-      // return null if double.parse fails
       return 0.0;
     }
   }
@@ -93,7 +105,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+
     return loadMap();
   }
   _animateToUser() async {
@@ -111,6 +123,7 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
     );
   }
   Widget loadMap(){
+    final providerButt = Provider.of<ButtonsProvider>(context);
     return Stack(
         children:[
           GoogleMap(
@@ -120,9 +133,11 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
             myLocationEnabled: true,
             mapType: MapType.terrain,
             onMapCreated: _onMapCreated,
-            initialCameraPosition: const CameraPosition(
-                target: LatLng(55.78895962153182, 49.11796498244947),
-                zoom: 15
+            initialCameraPosition: CameraPosition(
+                target: providerButt.selectedCity == 'Тольятти'
+                    ? const LatLng(53.507852, 49.420411)
+                    : const LatLng(53.245876, 50.155199),
+                zoom: 10
             ),
           ),
           Positioned(
@@ -142,46 +157,43 @@ class _MapsTabWidgetState extends State<MapsTabWidget>
                 ),
               )
           ),
-          Positioned(
-              bottom: 133,
-              right: 10,
-              child: SizedBox(
-                height: 49,
-                width: 49,
-                child: FloatingActionButton(
-                  onPressed: _animateToUser,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Center(
-                    child: Icon(
-                      CupertinoIcons.car_detailed,
-                      size: 33,
-                      color: Theme.of(context).shadowColor,
-                    ),
-                  ),
-                ),
-              )
-          ),
-          Positioned(
-              bottom: 197,
-              right: 10,
-              child: SizedBox(
-                height: 49,
-                width: 49,
-                child: FloatingActionButton(
-                  onPressed: _animateToUser,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(
-                    Icons.emoji_people,
-                    size: 33,
-                    color: Theme.of(context).shadowColor,
-                  ),
-                ),
-              )
-          )
+          // Positioned(
+          //     bottom: 133,
+          //     right: 10,
+          //     child: SizedBox(
+          //       height: 49,
+          //       width: 49,
+          //       child: FloatingActionButton(
+          //         onPressed: _animateToUser,
+          //         backgroundColor: Theme.of(context).primaryColor,
+          //         child: Center(
+          //           child: Icon(
+          //             CupertinoIcons.car_detailed,
+          //             size: 33,
+          //             color: Theme.of(context).shadowColor,
+          //           ),
+          //         ),
+          //       ),
+          //     )
+          // ),
+          // Positioned(
+          //     bottom: 197,
+          //     right: 10,
+          //     child: SizedBox(
+          //       height: 49,
+          //       width: 49,
+          //       child: FloatingActionButton(
+          //         onPressed: _animateToUser,
+          //         backgroundColor: Theme.of(context).primaryColor,
+          //         child: Icon(
+          //           Icons.emoji_people,
+          //           size: 33,
+          //           color: Theme.of(context).shadowColor,
+          //         ),
+          //       ),
+          //     )
+          // )
         ]
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

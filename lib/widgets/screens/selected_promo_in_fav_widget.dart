@@ -1,7 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../generated/l10n.dart';
 import '../../models/target_promo_model.dart';
 import '../../provider/favorites_provider.dart';
 import '../../provider/send_message_provider.dart';
@@ -15,20 +16,12 @@ class SelectedPromoInFavWidget extends StatefulWidget {
 }
 
 class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
-  List<String> categories = [
-    'Все',
-    'Фастфуд',
-    'Пицца',
-    'Шаурма',
-    'Роллы',
-    'Бургеры'
-  ];
 
   int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final sendEmailProvider = Provider.of<SendMessageProvider>(context);
+    final sendProvider = Provider.of<SendMessageProvider>(context);
     final favProvider = Provider.of<FavoritesProvider>(context);
     return Scaffold(
       body: NestedScrollView(
@@ -41,23 +34,27 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 child: IconButton(
                     onPressed: () {
                       favProvider.addStockToFav(
-                          context,
-                          widget.model.basicDescription,
-                          widget.model.shortDescription,
-                          widget.model.email,
-                          widget.model.endDate,
-                          widget.model.nameInstitution,
-                          widget.model.nameStocks,
-                          widget.model.startDate,
-                          widget.model.phoneNumber,
-                          widget.model.informationAboutTheRest,
-                          widget.model.operatingMode,
-                          widget.model.shareSize,
-                          widget.model.resRating,
-                          widget.model.image,
-                          widget.model.iconRes,
-                          widget.model.fullAddress,
-                          widget.model.shortAddress
+                        context,
+                        widget.model.basicDescription,
+                        widget.model.shortDescription,
+                        widget.model.email,
+                        widget.model.endDate,
+                        widget.model.nameInstitution,
+                        widget.model.nameStocks,
+                        widget.model.startDate,
+                        widget.model.phoneNumber,
+                        widget.model.informationAboutTheRest,
+                        widget.model.operatingMode,
+                        widget.model.shareSize,
+                        widget.model.resRating,
+                        widget.model.image,
+                        widget.model.iconRes,
+                        widget.model.fullAddress,
+                        widget.model.shortAddress,
+                        widget.model.linkToTheInt,
+                        widget.model.linkToTheVk,
+                        widget.model.tags,
+                        widget.model.urlPhotos
                       );
                     },
                     icon: Icon(
@@ -68,13 +65,34 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 ),
               ),
             ],
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                          widget.model.image
-                      )
+            flexibleSpace: CachedNetworkImage(
+              imageUrl: widget.model.image,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: imageProvider
+                    )
+                ),
+              ),
+              placeholder: (context, url) => Container(
+                  color: Theme.of(context).splashColor,
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 5,
+                    backgroundColor: Theme.of(context).backgroundColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                  )
+              ),
+              errorWidget: (context, url, error) => Container(
+                  color: Theme.of(context).splashColor,
+                  alignment: Alignment.center,
+                  child: Text(
+                    S.of(context).error_text,
+                    style: const TextStyle(
+                        fontFamily: 'SFProBold',
+                        fontSize: 20
+                    ),
                   )
               ),
             ),
@@ -106,9 +124,9 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                       height: 32,
                       width: 72,
                       decoration: BoxDecoration(
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
-                              color: Colors.black12,
+                              color: Theme.of(context).splashColor,
                               spreadRadius: 0.1,
                               blurRadius: 3,
                               // offset: Offset(0.1, 0.1),
@@ -143,12 +161,41 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 height: 16,
               ),
               SizedBox(
-                height: 30,
+                height: 50,
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) => buildCategory(index),
+                  itemCount: widget.model.tags.length,
+                  itemBuilder: (context, index) => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
+                    height: 26,
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).splashColor,
+                            spreadRadius: 0.1,
+                            blurRadius: 0.1,
+                          )
+                        ],
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: const BorderRadius.all(Radius.circular(10)
+                        )
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: Center(
+                        child: Text(
+                          widget.model.tags[index],
+                          style: TextStyle(
+                              fontFamily: 'SFProLight',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Theme.of(context).indicatorColor
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -175,7 +222,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 height: 24,
               ),
               Text(
-                'О ресторане',
+                S.of(context).about_inst_text,
                 style: TextStyle(
                     color: Theme.of(context).highlightColor,
                     fontSize: 14
@@ -186,15 +233,32 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               ),
               Row(
                 children: [
-                  Container(
-                    height: 42,
-                    width: 42,
-                    decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(Radius.circular(50)),
-                          image: DecorationImage(
-                              fit: BoxFit.fitHeight,
-                              image: NetworkImage(widget.model.iconRes)
+                  CachedNetworkImage(
+                    imageUrl: widget.model.iconRes,
+                    imageBuilder: (context, imageProvider) => Container(
+                      height: 42,
+                      width: 42,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(50)),
+                        image: DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: imageProvider
+                        ),
                       ),
+                    ),
+                    placeholder: (context, url) => Container(
+                      height: 42,
+                      width: 42,
+                      decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(50)),
+                          color: Theme.of(context).backgroundColor
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      margin: const EdgeInsets.only(left: 1.7),
+                      height: 42,
+                      width: 42,
+                      child: const CircularProgressIndicator(),
                     ),
                   ),
                   const SizedBox(
@@ -229,19 +293,101 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 ),
               ),
               const SizedBox(height: 24,),
-              Container(
+              SizedBox(
                 height: 188,
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage('assets/images/marjan-blan-marjanblan-gHCbgGN5TCA-unsplash 1.png')
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                        onPageChanged: (value){
+                          setState((){
+                            selectedIndex = value;
+                          });
+                        },
+                        itemCount: widget.model.urlPhotos.length,
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return CachedNetworkImage(
+                            imageUrl: widget.model.urlPhotos[index],
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius: const BorderRadius.all(Radius.circular(22))
+                              ),
+                            ),
+                            placeholder: (context, index) => Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).splashColor,
+                                borderRadius: const BorderRadius.all(Radius.circular(22)),
+                              ),
+                              child: Container(
+                                alignment: Alignment.center,
+                                margin: const EdgeInsets.symmetric(horizontal: 150, vertical: 80),
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 5,
+                                  backgroundColor: Theme.of(context).backgroundColor,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error)=> Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).splashColor,
+                                borderRadius: const BorderRadius.all(Radius.circular(22)),
+                              ),
+                              child: Text(
+                                S.of(context).error_text,
+                                style: const TextStyle(
+                                    fontFamily: 'SFProBold',
+                                    fontSize: 20
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(22))
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Container(
+                        margin: const EdgeInsets.all(16),
+                        height: 20,
+                        width: 44,
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Theme.of(context).primaryColor),
+                            borderRadius: const BorderRadius.all(Radius.circular(10))
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                                CupertinoIcons.camera_fill,
+                                size: 13,
+                                color: Theme.of(context).primaryColor
+                            ),
+                            const SizedBox(width: 5.67,),
+                            Text(
+                              '${selectedIndex+1}',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context).primaryColor
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24,),
               Text(
-                'Адрес',
+                S.of(context).address_text,
                 style: TextStyle(
                     color: Theme.of(context).highlightColor,
                     fontSize: 14,
@@ -268,7 +414,8 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
               ),
               const SizedBox(height: 28,),
               Text(
-                'Режим работы', style: TextStyle(
+                S.of(context).operating_mode_text,
+                style: TextStyle(
                   color: Theme.of(context).highlightColor,
                   fontSize: 14,
                   fontFamily: 'SFProLight'
@@ -299,7 +446,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => sendEmailProvider.comToInt(widget.model.linkToTheInt),
+                        onTap: () => sendProvider.comToInt(widget.model.linkToTheInt),
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           height: 40,
@@ -308,7 +455,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () => sendEmailProvider.comToVk(widget.model.linkToTheVk),
+                        onTap: () => sendProvider.comToVk(widget.model.linkToTheVk),
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           height: 40,
@@ -322,7 +469,7 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                   ),
                   const SizedBox(height: 12,),
                   Text(
-                    'Пожаловаться',
+                    S.of(context).complain_text,
                     style: TextStyle(
                         color: Theme.of(context).highlightColor,
                         fontSize: 16,
@@ -341,11 +488,11 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                       child: TextButton(
                         onPressed: (){
                           setState(() {
-                            _makePhoneCall('tel:${widget.model.phoneNumber}');
+                            sendProvider.makePhoneCall('tel:${widget.model.phoneNumber}');
                           });
                         },
                         child: Text(
-                          'Забронировать',
+                          S.of(context).to_book_text,
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               fontFamily: 'SFPro',
@@ -359,48 +506,6 @@ class _SelectedPromoInFavWidgetState extends State<SelectedPromoInFavWidget> {
                 ],
               )
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _makePhoneCall(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  Widget buildCategory(int index) {
-    return Container(
-      height: 16,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).splashColor,
-              spreadRadius: 0.1,
-              blurRadius: 0.1,
-              offset: const Offset(0.1, 0.1),
-            )
-          ],
-          color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.all(Radius.circular(10)
-          )
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Center(
-          child: Text(
-            categories[index],
-            style: TextStyle(
-                fontFamily: 'SFProLight',
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Theme.of(context).indicatorColor
-            ),
           ),
         ),
       ),
