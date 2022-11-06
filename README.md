@@ -10,6 +10,6 @@ Install the app to find good promotions and fill your stomach and your loved one
 
 Technology Stack: Android Studio, Flutter SDK, Internet connection checker, Cloud firestore, Provider, Hive, Firebase core, Intl, Location, Google Maps, Geolocator, Url launcher, Flutter multi formatter, Adaptive theme, Page transition, Flutter email sender, Geoflutterfire, Animated splash screen and etc.
 
-Created by [@Skeleteenx](https://github.com/Skeleteenx).
+Created by [@Emile Kuchumov](https://github.com/Skeleteenx).
 ## Preview:
 <img src="https://im.wampi.ru/2022/11/06/Frame_6_8.png" alt="Frame_6_8.png" border="0">
