@@ -12,4 +12,4 @@ Technology Stack: Android Studio, Flutter SDK, Internet connection checker, Clou
 
 Created by [@Skeleteenx](https://github.com/Skeleteenx).
 ## Preview:
-<img src="https://vk.com/doc295522785_650427882?hash=ioq4CnV7WtLZtexAjJ3yHW7W2haTzfuA4SUx1dmG8fL&dl=XlgZBjDv6zW7n70DXO9tx2JY6xHuFWZGOZzH0f0hz1g">
+<img src="https://im.wampi.ru/2022/11/06/Frame_6_8.png" alt="Frame_6_8.png" border="0">
