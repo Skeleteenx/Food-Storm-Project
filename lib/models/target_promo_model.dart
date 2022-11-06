@@ -15,6 +15,10 @@ class TargetPromoModel {
   String iconRes;
   String fullAddress;
   String shortAddress;
+  String linkToTheInt;
+  String linkToTheVk;
+  List<dynamic> tags;
+  List<dynamic> urlPhotos;
 
   TargetPromoModel({
     required this.shortDescription,
@@ -33,5 +37,9 @@ class TargetPromoModel {
     required this.iconRes,
     required this.fullAddress,
     required this.shortAddress,
-});
+    required this.linkToTheInt,
+    required this.linkToTheVk,
+    required this.tags,
+    required this.urlPhotos,
+  });
 }

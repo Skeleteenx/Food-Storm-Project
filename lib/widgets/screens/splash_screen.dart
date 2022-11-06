@@ -1,19 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart';
+import '../../helpers/constants.dart';
 import '../../generated/l10n.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
-
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -21,29 +17,29 @@ class _SplashScreenState extends State<SplashScreen> {
         GlobalCupertinoLocalizations.delegate
       ],
       supportedLocales: S.delegate.supportedLocales,
-      theme: ThemeData(fontFamily: 'Gilroy'),
+      theme: ThemeData(
+        fontFamily: ConstantsFonts.gilroyFont,
+      ),
       home: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+          padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 80.0),
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.percent_sharp,
-                  size: 70,
-                  color: Theme.of(context).primaryColor
+                  size: 70.0,
+                  color: Theme.of(context).primaryColor,
                 ),
-                // SizedBox(width: 5,),
                 Text(
-                  (S.of(context).splash_screen_title),
-                  // 'Food Storm',
+                  (S.of(context).app_name_text),
                   style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 44
-                  )
-                )
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 44.0,
+                  ),
+                ),
               ],
             ),
           ),

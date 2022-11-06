@@ -1,15 +1,21 @@
-import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as fstorage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:FoodStorm/helpers/constants.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import '../generated/l10n.dart';
+import 'dart:io';
 
-class AddImageInStorageProvider extends ChangeNotifier{
-  File? image;
-  String? imageUrl;
+class AddImageInStorageProvider extends ChangeNotifier {
+  CollectionReference refColl =
+      FirebaseFirestore.instance.collection(ConstantsKeys.stocks);
+
   bool buttonState = false;
-  CollectionReference refColl = FirebaseFirestore.instance.collection('stocks');
+
+  String? imageUrl;
+
+  File? image;
 
   Future pickingImage(bool camera) async {
     try {
@@ -21,9 +27,7 @@ class AddImageInStorageProvider extends ChangeNotifier{
       this.image = imageTemporary;
       notifyListeners();
     } on PlatformException {
-      return const SnackBar(
-        content: Text('Ошибка'),
-      );
+      return;
     }
   }
 
@@ -34,22 +38,29 @@ class AddImageInStorageProvider extends ChangeNotifier{
       final String fileName = DateTime.now().microsecondsSinceEpoch.toString();
       fstorage.Reference reference = fstorage.FirebaseStorage.instance
           .ref()
-          .child("images/")
+          .child(ConstantsKeys.imageRes)
           .child(fileName);
       final File file = File(image!.path);
       fstorage.UploadTask uploadTask = reference.putFile(file);
       fstorage.TaskSnapshot taskSnapshot = await uploadTask;
-      await taskSnapshot.ref.getDownloadURL().then((url) {
-        imageUrl = url;
-        notifyListeners();
-      });
+      await taskSnapshot.ref.getDownloadURL().then(
+        (url) {
+          imageUrl = url;
+          notifyListeners();
+        },
+      );
     }
+  }
+
+  zeroingTheImage() {
+    image = null;
+    notifyListeners();
   }
 
   showModalSheet(BuildContext context) {
     return showModalBottomSheet(
       clipBehavior: Clip.hardEdge,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(20.0),
@@ -59,7 +70,7 @@ class AddImageInStorageProvider extends ChangeNotifier{
       builder: (BuildContext context) {
         return SizedBox(
           width: double.infinity,
-          height: 150,
+          height: 150.0,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -67,10 +78,10 @@ class AddImageInStorageProvider extends ChangeNotifier{
                 height: 25.0,
               ),
               Text(
-                'Выберите способ',
+                S.of(context).choose_method_text,
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                  fontFamily: 'SFProSemibold',
+                  fontFamily: ConstantsFonts.semiBoldFont,
                   color: Theme.of(context).canvasColor,
                   fontSize: 21.0,
                 ),
@@ -79,7 +90,9 @@ class AddImageInStorageProvider extends ChangeNotifier{
                 height: 25.0,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14.0,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -89,18 +102,20 @@ class AddImageInStorageProvider extends ChangeNotifier{
                           pickingImage(false);
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).backgroundColor,
-                          onPrimary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          foregroundColor: Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 13.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 13.0,
+                          ),
                           child: Text(
-                            'Из галерии',
+                            S.of(context).from_gallery_text,
                             style: TextStyle(
-                              fontFamily: 'SFProSemibold',
+                              fontFamily: ConstantsFonts.semiBoldFont,
                             ),
                           ),
                         ),
@@ -116,18 +131,20 @@ class AddImageInStorageProvider extends ChangeNotifier{
                           pickingImage(true);
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).backgroundColor,
-                          onPrimary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).backgroundColor,
+                          foregroundColor: Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 13.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 13.0,
+                          ),
                           child: Text(
-                            'Камера',
+                            S.of(context).camera_text,
                             style: TextStyle(
-                              fontFamily: 'SFProSemibold',
+                              fontFamily: ConstantsFonts.semiBoldFont,
                             ),
                           ),
                         ),

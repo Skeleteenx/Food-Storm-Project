@@ -1,21 +1,20 @@
-class MarkerModel{
+class MarkerModel {
   String latitude;
   String longitude;
   String nameInstitution;
 
   MarkerModel({
-    required this.nameInstitution,
     required this.latitude,
     required this.longitude,
-});
+    required this.nameInstitution,
+  });
 
-  MarkerModel.fromjson(Map<String, dynamic> json)
+  MarkerModel.fromJson(Map<String, dynamic> json)
       : latitude = json['latitude'],
         longitude = json['longitude'],
         nameInstitution = json['nameInstitution'];
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'latitude': latitude,
         'longitude': longitude,
         'nameInstitution': nameInstitution
