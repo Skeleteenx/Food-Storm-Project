@@ -381,7 +381,7 @@ packages:
       name: flutter_multi_formatter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.9.4"
+    version: "2.9.3"
   flutter_picker:
     dependency: "direct main"
     description:
@@ -651,13 +651,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
-  logger:
-    dependency: transitive
-    description:
-      name: logger
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   logging:
     dependency: transitive
     description:
@@ -840,13 +833,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
-  rename:
-    dependency: "direct main"
-    description:
-      name: rename
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   rxdart:
     dependency: transitive
     description:
@@ -1117,7 +1103,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.1"
+    version: "3.0.1"
   xdg_directories:
     dependency: transitive
     description:
