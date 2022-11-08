@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:FoodStorm/provider/send_message_provider.dart';
-import '../widgets/screens/selected_promotion.dart';
 import 'package:FoodStorm/provider/favorites_provider.dart';
+import '../widgets/screens/selected_promotion.dart';
 import '../models/target_promo_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
