@@ -34,7 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "All shares have been removed from favorites."),
         "already_have_text": MessageLookupByLibrary.simpleMessage(
             "This promotion is already in favorites."),
-        "app_name_text": MessageLookupByLibrary.simpleMessage("Food Storm"),
+        "app_name_text": MessageLookupByLibrary.simpleMessage("FoodStorm"),
         "back_text": MessageLookupByLibrary.simpleMessage("Back"),
         "camera_text": MessageLookupByLibrary.simpleMessage("Camera"),
         "choose_city_text":

@@ -9,7 +9,36 @@
       "client_info": {
         "mobilesdk_app_id": "1:400022350814:android:7ca03ae015c0db9dab4b4f",
         "android_client_info": {
-          "package_name": "com.example.food_storm"
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "400022350814-fbduj0pqi3ihn4m9bic4e4dnglgodlce.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj0MxogChlE7swwV6SkkddECWH6hx9ZUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "400022350814-fbduj0pqi3ihn4m9bic4e4dnglgodlce.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400022350814:android:17314fd7a2db9728ab4b4f",
+        "android_client_info": {
+          "package_name": "dev.emile.foodstorm"
         }
       },
       "oauth_client": [

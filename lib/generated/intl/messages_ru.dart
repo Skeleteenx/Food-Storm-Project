@@ -33,7 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Все акции удалены из избранного."),
         "already_have_text": MessageLookupByLibrary.simpleMessage(
             "Эта акция уже находится в избранном."),
-        "app_name_text": MessageLookupByLibrary.simpleMessage("Food Storm"),
+        "app_name_text": MessageLookupByLibrary.simpleMessage("FoodStorm"),
         "back_text": MessageLookupByLibrary.simpleMessage("Назад"),
         "camera_text": MessageLookupByLibrary.simpleMessage("Камера"),
         "choose_city_text":
